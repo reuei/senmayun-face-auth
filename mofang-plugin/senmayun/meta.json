@@ -1,0 +1,86 @@
+{
+  "name": "森码云实人认证",
+  "code": "senmayun",
+  "version": "1.0.0",
+  "author": "森码云",
+  "description": "与森码云实人认证系统对接，为魔方财务提供实人认证功能。支持人脸比对、活体检测、多通道冗余架构。",
+  "type": "server",
+  "category": "security",
+  "requires": {
+    "mofang": ">=3.0.0",
+    "php": ">=7.4"
+  },
+  "files": [
+    "senmayun.php",
+    "hooks.php",
+    "pages.php"
+  ],
+  "hooks": [
+    "order_paid",
+    "user_register",
+    "client_area_nav"
+  ],
+  "pages": [
+    {
+      "name": "认证页面",
+      "file": "pages.php",
+      "function": "verifyPage"
+    },
+    {
+      "name": "回调处理",
+      "file": "pages.php",
+      "function": "callbackPage"
+    },
+    {
+      "name": "通知处理",
+      "file": "pages.php",
+      "function": "notifyPage"
+    }
+  ],
+  "config": [
+    {
+      "key": "api_url",
+      "name": "API地址",
+      "type": "text",
+      "default": "",
+      "desc": "森码云实人认证系统的访问地址"
+    },
+    {
+      "key": "api_key",
+      "name": "API Key",
+      "type": "text",
+      "default": "",
+      "desc": "森码云管理后台获取的API Key"
+    },
+    {
+      "key": "api_secret",
+      "name": "API Secret",
+      "type": "password",
+      "default": "",
+      "desc": "森码云管理后台获取的API Secret"
+    },
+    {
+      "key": "auto_verify_on_paid",
+      "name": "支付后自动发起认证",
+      "type": "switch",
+      "default": "1",
+      "desc": "用户支付后自动跳转到认证页面"
+    },
+    {
+      "key": "require_verify_before_order",
+      "name": "下单前必须认证",
+      "type": "switch",
+      "default": "0",
+      "desc": "未完成实人认证的用户不能下单"
+    }
+  ],
+  "install_sql": "CREATE TABLE IF NOT EXISTS `senmayun_face_auth` (`id` int(11) NOT NULL AUTO_INCREMENT,`uid` int(11) NOT NULL,`order_id` int(11) DEFAULT NULL,`product_id` int(11) DEFAULT NULL,`token` varchar(100) DEFAULT NULL,`status` tinyint(1) NOT NULL DEFAULT '0',`score` decimal(5,2) DEFAULT NULL,`liveness_passed` tinyint(1) DEFAULT NULL,`verify_time` datetime DEFAULT NULL,`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY (`id`),KEY `uid` (`uid`),KEY `token` (`token`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+  "uninstall_sql": "",
+  "update_log": [
+    {
+      "version": "1.0.0",
+      "date": "2024-03-15",
+      "content": "初始版本发布"
+    }
+  ]
+}

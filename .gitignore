@@ -1,0 +1,51 @@
+# Dependencies
+vendor/
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Install lock
+public/install.lock
+
+# Runtime
+runtime/
+cache/
+logs/
+*.log
+
+# Uploads
+public/uploads/
+!public/uploads/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build
+resources/dist/
+*.tsbuildinfo
+
+# Test
+coverage/
+.phpunit.result.cache
+
+# Editor
+.project
+.classpath
+.settings/
+
+# Backup
+*.bak
+*.backup
+*.old
