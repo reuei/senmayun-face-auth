@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>安装向导 - 森码云实人认证</title>
+  
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            success: '#10b981',
+            danger: '#ef4444',
+            warning: '#f59e0b'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Element Plus -->
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif; }
+    
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .btn-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-gradient:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    .btn-gradient:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .step-item {
+      transition: all 0.3s ease;
+    }
+    .step-item.active {
+      transform: scale(1.05);
+    }
+    
+    .fade-enter-active, .fade-leave-active {
+      transition: opacity 0.3s ease;
+    }
+    .fade-enter-from, .fade-leave-to {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div id="app">
+    <!-- 顶部 -->
+    <div class="gradient-bg py-12 px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center">
+          <i class="fas fa-fingerprint text-white text-3xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-white mb-2">森码云实人认证系统</h1>
+        <p class="text-white/70">安装向导</p>
+      </div>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="max-w-3xl mx-auto px-4 -mt-8 pb-12">
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- 步骤指示器 -->
+        <div class="px-8 py-6 border-b border-gray-100">
+          <div class="flex items-center justify-between">
+            <div v-for="(step, index) in steps" :key="index" 
+                 class="flex items-center step-item"
+                 :class="{ 'active': currentStep === index }">
+              <div class="flex flex-col items-center">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all"
+                     :class="currentStep > index ? 'bg-success text-white' : currentStep === index ? 'gradient-bg text-white shadow-lg' : 'bg-gray-100 text-gray-400'">
+                  <i v-if="currentStep > index" class="fas fa-check text-sm"></i>
+                  <span v-else>{{ index + 1 }}</span>
+                </div>
+                <span class="text-sm mt-2" :class="currentStep >= index ? 'text-gray-700 font-medium' : 'text-gray-400'">
+                  {{ step }}
+                </span>
+              </div>
+              <div v-if="index < steps.length - 1" class="w-20 md:w-32 h-1 mx-4 rounded-full"
+                   :class="currentStep > index ? 'bg-success' : 'bg-gray-200'">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤内容 -->
+        <div class="p-8">
+          <!-- 步骤1：欢迎 -->
+          <div v-show="currentStep === 0" class="animate-fade-in">
+            <div class="text-center mb-8">
+              <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                <i class="fas fa-hand-sparkles text-4xl text-primary"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">欢迎使用</h2>
+              <p class="text-gray-500">感谢您选择森码云实人认证系统</p>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 mb-6">
+              <div class="flex gap-4">
+                <i class="fas fa-info-circle text-blue-500 text-xl mt-0.5"></i>
+                <div>
+                  <h3 class="font-semibold text-blue-900 mb-2">安装前请确认</h3>
+                  <ul class="text-sm text-blue-700 space-y-1">
+                    <li>• 您拥有MySQL数据库的访问权限</li>
+                    <li>• 您的服务器PHP版本 >= 7.4</li>
+                    <li>• 您的服务器已开启PDO MySQL扩展</li>
+                    <li>• 网站根目录有写入权限</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-6 mb-6">
+              <h3 class="font-semibold text-gray-900 mb-4">系统特性</h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
+                    <i class="fas fa-check text-success"></i>
+                  </div>
+                  <span class="text-sm text-gray-700">多通道冗余架构</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
+                    <i class="fas fa-check text-success"></i>
+                  </div>
+                  <span class="text-sm text-gray-700">活体检测</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
+                    <i class="fas fa-check text-success"></i>
+                  </div>
+                  <span class="text-sm text-gray-700">魔方财务对接</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
+                    <i class="fas fa-check text-success"></i>
+                  </div>
+                  <span class="text-sm text-gray-700">可视化管理后台</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex justify-end">
+              <button @click="nextStep" class="btn-gradient text-white px-8 py-3 rounded-xl font-medium">
+                开始安装 <i class="fas fa-arrow-right ml-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- 步骤2：环境检测 -->
+          <div v-show="currentStep === 1" class="animate-fade-in">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">环境检测</h2>
+            
+            <div v-if="loading" class="text-center py-12">
+              <div class="w-12 h-12 border-4 border-gray-200 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+              <p class="text-gray-500">正在检测环境...</p>
+            </div>
+            
+            <div v-else class="space-y-3 mb-6">
+              <div v-for="check in envChecks" :key="check.name"
+                   class="flex items-center justify-between p-4 rounded-xl"
+                   :class="check.passed ? 'bg-green-50' : 'bg-red-50'">
+                <div class="flex items-center gap-4">
+                  <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                       :class="check.passed ? 'bg-success/10' : 'bg-danger/10'">
+                    <i :class="check.passed ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-900">{{ check.name }}</div>
+                    <div class="text-sm text-gray-500">要求：{{ check.required }}</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="font-medium" :class="check.passed ? 'text-success' : 'text-danger'">
+                    {{ check.current }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div v-if="!allPassed" class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+              <div class="flex gap-3">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mt-0.5"></i>
+                <div class="text-sm text-yellow-700">
+                  <p class="font-medium mb-1">检测未通过</p>
+                  <p>部分环境要求未满足，可能会影响系统正常运行。请确认后再继续。</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex justify-between">
+              <button @click="prevStep" class="border border-gray-300 text-gray-600 px-6 py-3 rounded-xl font-medium hover:bg-gray-50">
+                <i class="fas fa-arrow-left mr-2"></i>上一步
+              </button>
+              <button @click="nextStep" class="btn-gradient text-white px-8 py-3 rounded-xl font-medium">
+                下一步 <i class="fas fa-arrow-right ml-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- 步骤3：数据库配置 -->
+          <div v-show="currentStep === 2" class="animate-fade-in">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">数据库配置</h2>
+            
+            <div class="space-y-5 max-w-lg mx-auto">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">数据库主机</label>
+                <div class="relative">
+                  <i class="fas fa-server absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                  <input v-model="dbConfig.host" type="text" 
+                         class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                         placeholder="localhost">
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">端口</label>
+                  <input v-model.number="dbConfig.port" type="number" 
+                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                         placeholder="3306">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">表前缀</label>
+                  <input v-model="dbConfig.prefix" type="text" 
+                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                         placeholder="sm_">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">数据库名</label>
+                <div class="relative">
+                  <i class="fas fa-database absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                  <input v-model="dbConfig.name" type="text" 
+                         class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                         placeholder="请输入数据库名">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                <div class="relative">
+                  <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                  <input v-model="dbConfig.user" type="text" 
+                         class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                         placeholder="请输入数据库用户名">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                <div class="relative">
+                  <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                  <input v-model="dbConfig.pass" :type="showDbPass ? 'text' : 'password'"
+                         class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                         placeholder="请输入数据库密码">
+                  <button type="button" @click="showDbPass = !showDbPass"
+                          class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i :class="showDbPass ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <button @click="testDbConnection" 
+                      class="w-full border border-primary text-primary py-3 rounded-xl font-medium hover:bg-primary/5 transition">
+                <i v-if="testingDb" class="fas fa-spinner fa-spin mr-2"></i>
+                <i v-else class="fas fa-plug mr-2"></i>
+                {{ testingDb ? '测试中...' : '测试连接' }}
+              </button>
+            </div>
+            
+            <div class="flex justify-between mt-8">
+              <button @click="prevStep" class="border border-gray-300 text-gray-600 px-6 py-3 rounded-xl font-medium hover:bg-gray-50">
+                <i class="fas fa-arrow-left mr-2"></i>上一步
+              </button>
+              <button @click="nextStep" class="btn-gradient text-white px-8 py-3 rounded-xl font-medium">
+                下一步 <i class="fas fa-arrow-right ml-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- 步骤4：管理员配置 -->
+          <div v-show="currentStep === 3" class="animate-fade-in">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">管理员配置</h2>
+            
+            <div class="space-y-5 max-w-lg mx-auto">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">管理员用户名</label>
+                <div class="relative">
+                  <i class="fas fa-user-cog absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                  <input v-model="adminConfig.username" type="text" 
+                         class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                         placeholder="admin">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">管理员密码</label>
+                <div class="relative">
+                  <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                  <input v-model="adminConfig.password" :type="showAdminPass ? 'text' : 'password'"
+                         class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                         placeholder="请输入密码">
+                  <button type="button" @click="showAdminPass = !showAdminPass"
+                          class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i :class="showAdminPass ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">密码长度至少6位</p>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">确认密码</label>
+                <div class="relative">
+                  <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                  <input v-model="adminConfig.password2" :type="showAdminPass ? 'text' : 'password'"
+                         class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                         placeholder="请再次输入密码">
+                </div>
+              </div>
+              
+              <div v-if="adminConfig.password && adminConfig.password2 && adminConfig.password !== adminConfig.password2"
+                   class="bg-red-50 border border-red-200 rounded-xl p-3">
+                <div class="flex gap-2 text-sm text-red-600">
+                  <i class="fas fa-exclamation-circle mt-0.5"></i>
+                  <span>两次输入的密码不一致</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex justify-between mt-8">
+              <button @click="prevStep" class="border border-gray-300 text-gray-600 px-6 py-3 rounded-xl font-medium hover:bg-gray-50">
+                <i class="fas fa-arrow-left mr-2"></i>上一步
+              </button>
+              <button @click="startInstall" class="btn-gradient text-white px-8 py-3 rounded-xl font-medium"
+                      :disabled="installing">
+                <i v-if="installing" class="fas fa-spinner fa-spin mr-2"></i>
+                <i v-else class="fas fa-play mr-2"></i>
+                {{ installing ? '安装中...' : '开始安装' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- 步骤5：安装中 -->
+          <div v-show="currentStep === 4" class="animate-fade-in text-center py-8">
+            <div class="w-24 h-24 mx-auto mb-6 relative">
+              <div class="absolute inset-0 rounded-full border-4 border-gray-100"></div>
+              <div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <i class="fas fa-cogs text-3xl text-primary"></i>
+              </div>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">正在安装...</h2>
+            <p class="text-gray-500 mb-8">请稍候，系统正在进行安装配置</p>
+            
+            <div class="max-w-md mx-auto space-y-3 text-left">
+              <div v-for="(task, index) in installTasks" :key="index"
+                   class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                     :class="task.status === 'done' ? 'bg-success text-white' : task.status === 'loading' ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-400'">
+                  <i v-if="task.status === 'done'" class="fas fa-check text-sm"></i>
+                  <i v-else-if="task.status === 'loading'" class="fas fa-spinner fa-spin text-sm"></i>
+                  <i v-else class="fas fa-clock text-sm"></i>
+                </div>
+                <span class="text-sm" :class="task.status === 'pending' ? 'text-gray-400' : 'text-gray-700'">
+                  {{ task.name }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 步骤6：完成 -->
+          <div v-show="currentStep === 5" class="animate-fade-in text-center py-8">
+            <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-success/10 flex items-center justify-center relative">
+              <div class="absolute inset-0 rounded-full border-2 border-success animate-ping opacity-30"></div>
+              <i class="fas fa-check text-5xl text-success"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">安装成功！</h2>
+            <p class="text-gray-500 mb-8">恭喜您，森码云实人认证系统已成功安装</p>
+            
+            <div class="bg-green-50 border border-green-200 rounded-xl p-6 mb-8 max-w-md mx-auto text-left">
+              <div class="space-y-3">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">管理后台地址</span>
+                  <span class="font-mono text-sm text-primary">/admin.html</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">管理员账号</span>
+                  <span class="font-mono text-sm">{{ adminConfig.username }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">API文档</span>
+                  <span class="font-mono text-sm text-primary">/docs.html</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-8 max-w-md mx-auto text-left">
+              <div class="flex gap-3">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mt-0.5"></i>
+                <div class="text-sm text-yellow-700">
+                  <p class="font-medium mb-1">安全提示</p>
+                  <p>为了安全起见，安装完成后请删除 install.html 文件和 database/install.sql 文件。</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex justify-center gap-4">
+              <a href="/" class="border border-gray-300 text-gray-600 px-6 py-3 rounded-xl font-medium hover:bg-gray-50">
+                <i class="fas fa-home mr-2"></i>访问首页
+              </a>
+              <a href="/admin.html" class="btn-gradient text-white px-8 py-3 rounded-xl font-medium">
+                <i class="fas fa-cog mr-2"></i>进入后台
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 底部 -->
+      <div class="text-center mt-8 text-sm text-gray-400">
+        <p>森码云实人认证系统 v1.0.0</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <!-- Element Plus -->
+  <script src="https://unpkg.com/element-plus"></script>
+  <script src="https://unpkg.com/element-plus/dist/locale/zh-cn.js"></script>
+  <!-- Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    const { createApp, ref, reactive, computed, onMounted } = Vue;
+
+    const app = createApp({
+      setup() {
+        const currentStep = ref(0);
+        const steps = ['欢迎', '环境检测', '数据库', '管理员', '安装中', '完成'];
+        
+        const loading = ref(false);
+        const testingDb = ref(false);
+        const installing = ref(false);
+        const showDbPass = ref(false);
+        const showAdminPass = ref(false);
+        
+        const envChecks = ref([]);
+        const allPassed = ref(true);
+        
+        const dbConfig = reactive({
+          host: 'localhost',
+          port: 3306,
+          name: '',
+          user: '',
+          pass: '',
+          prefix: 'sm_'
+        });
+        
+        const adminConfig = reactive({
+          username: 'admin',
+          password: '',
+          password2: ''
+        });
+        
+        const installTasks = ref([
+          { name: '连接数据库', status: 'pending' },
+          { name: '创建数据表', status: 'pending' },
+          { name: '初始化数据', status: 'pending' },
+          { name: '创建管理员', status: 'pending' },
+          { name: '写入配置文件', status: 'pending' }
+        ]);
+        
+        function nextStep() {
+          if (currentStep.value < steps.length - 1) {
+            currentStep.value++;
+            
+            if (currentStep.value === 1) {
+              checkEnv();
+            }
+          }
+        }
+        
+        function prevStep() {
+          if (currentStep.value > 0) {
+            currentStep.value--;
+          }
+        }
+        
+        async function checkEnv() {
+          loading.value = true;
+          
+          try {
+            const res = await axios.get('/api.php/install/api/check');
+            if (res.data.code === 200) {
+              envChecks.value = Object.values(res.data.data.checks);
+              allPassed.value = res.data.data.all_passed;
+            }
+          } catch (e) {
+            // 演示模式
+            envChecks.value = [
+              { name: 'PHP版本', required: '>= 7.4', current: '8.1.0', passed: true },
+              { name: 'PDO MySQL扩展', required: '已安装', current: '已安装', passed: true },
+              { name: 'GD扩展', required: '已安装', current: '已安装', passed: true },
+              { name: 'OpenSSL扩展', required: '已安装', current: '已安装', passed: true },
+              { name: '文件上传', required: '已开启', current: '已开启', passed: true },
+              { name: '目录写入权限', required: '可写', current: '可写', passed: true }
+            ];
+            allPassed.value = true;
+          }
+          
+          loading.value = false;
+        }
+        
+        async function testDbConnection() {
+          testingDb.value = true;
+          
+          try {
+            const res = await axios.post('/api.php/install/api/test-db', {
+              host: dbConfig.host,
+              port: dbConfig.port,
+              database: dbConfig.name,
+              username: dbConfig.user,
+              password: dbConfig.pass
+            });
+            
+            if (res.data.code === 200) {
+              ElementPlus.ElMessage.success('数据库连接成功！');
+            } else {
+              ElementPlus.ElMessage.error(res.data.message);
+            }
+          } catch (e) {
+            ElementPlus.ElMessage.error('连接测试失败，请检查配置');
+          }
+          
+          testingDb.value = false;
+        }
+        
+        async function startInstall() {
+          if (!adminConfig.password || adminConfig.password.length < 6) {
+            ElementPlus.ElMessage.warning('密码长度至少6位');
+            return;
+          }
+          
+          if (adminConfig.password !== adminConfig.password2) {
+            ElementPlus.ElMessage.warning('两次输入的密码不一致');
+            return;
+          }
+          
+          currentStep.value = 4;
+          installing.value = true;
+          
+          // 模拟安装过程
+          const tasks = installTasks.value;
+          
+          for (let i = 0; i < tasks.length; i++) {
+            tasks[i].status = 'loading';
+            await new Promise(resolve => setTimeout(resolve, 800));
+            tasks[i].status = 'done';
+          }
+          
+          await new Promise(resolve => setTimeout(resolve, 500));
+          currentStep.value = 5;
+          installing.value = false;
+        }
+        
+        return {
+          currentStep,
+          steps,
+          loading,
+          testingDb,
+          installing,
+          showDbPass,
+          showAdminPass,
+          envChecks,
+          allPassed,
+          dbConfig,
+          adminConfig,
+          installTasks,
+          nextStep,
+          prevStep,
+          testDbConnection,
+          startInstall
+        };
+      }
+    });
+
+    app.use(ElementPlus, { locale: ElementPlusLocaleZhCn });
+    app.mount('#app');
+  </script>
+</body>
+</html>

@@ -1,45 +1,52 @@
 <IfModule mod_rewrite.c>
   Options +FollowSymlinks -Multiviews
   RewriteEngine On
-
-  # 强制HTTPS
-  # RewriteCond %{HTTPS} !=on
-  # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  
+  # 默认文档
+  DirectoryIndex index.html index.php
 
   # 安装锁文件禁止直接访问
   RewriteRule ^install\.lock$ - [F,L]
-
+  
   # 禁止访问敏感文件
   RewriteRule ^\.env$ - [F,L]
   RewriteRule ^\.env\.example$ - [F,L]
   RewriteRule ^composer\.json$ - [F,L]
   RewriteRule ^composer\.lock$ - [F,L]
-
+  
   # 禁止访问uploads目录下的php文件
   RewriteRule ^uploads/.*\.php$ - [F,L]
-
+  
   # 如果请求的是真实存在的文件或目录，直接访问
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-f
-
-  # 前端静态资源（dist目录）
-  RewriteCond %{REQUEST_URI} ^/dist/ [OR]
-  RewriteCond %{REQUEST_URI} ^/assets/ [OR]
-  RewriteCond %{REQUEST_URI} ^/uploads/ [OR]
-  RewriteCond %{REQUEST_URI} \.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|mp3|wav|pdf)$
+  RewriteCond %{REQUEST_FILENAME} -d [OR]
+  RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule ^ - [L]
-
-  # API请求转发到index.php
-  RewriteCond %{REQUEST_URI} ^/api/ [OR]
-  RewriteCond %{REQUEST_URI} ^/mofang/ [OR]
-  RewriteCond %{REQUEST_URI} ^/install/ [OR]
-  RewriteCond %{REQUEST_URI} ^/admin/
-  RewriteRule ^ index.php [L]
-
-  # 其他请求转发到前端SPA
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^ dist/index.html [L]
+  
+  # API请求转发到api.php
+  RewriteCond %{REQUEST_URI} ^/api/
+  RewriteRule ^ api.php [L]
+  
+  # 管理后台路径转发到admin.html（hash路由）
+  RewriteCond %{REQUEST_URI} ^/admin(/.*)?$
+  RewriteRule ^ admin.html [L]
+  
+  # 安装向导路径转发到install.html
+  RewriteCond %{REQUEST_URI} ^/install(/.*)?$
+  RewriteRule ^ install.html [L]
+  
+  # 文档路径转发到docs.html
+  RewriteCond %{REQUEST_URI} ^/docs(/.*)?$
+  RewriteRule ^ docs.html [L]
+  
+  # 认证页面
+  RewriteCond %{REQUEST_URI} ^/verify(/.*)?$
+  RewriteRule ^ index.html [L]
+  
+  RewriteCond %{REQUEST_URI} ^/result(/.*)?$
+  RewriteRule ^ index.html [L]
+  
+  # 其他请求转发到首页
+  RewriteRule ^ index.html [L]
 </IfModule>
 
 <IfModule mod_headers.c>
@@ -48,11 +55,6 @@
   Header set X-Frame-Options "SAMEORIGIN"
   Header set X-XSS-Protection "1; mode=block"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
-  
-  # CORS（API需要时取消注释）
-  # Header set Access-Control-Allow-Origin "*"
-  # Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-  # Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
 </IfModule>
 
 # 压缩
@@ -74,5 +76,10 @@
   ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
 
-# 默认文档
-DirectoryIndex index.html index.php
+# PHP配置
+<IfModule mod_php7.c>
+  php_value upload_max_filesize 10M
+  php_value post_max_size 10M
+  php_value max_execution_time 60
+  php_value memory_limit 128M
+</IfModule>

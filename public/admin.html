@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台 - 森码云实人认证</title>
+  
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            success: '#10b981',
+            danger: '#ef4444',
+            warning: '#f59e0b',
+            info: '#3b82f6',
+            dark: '#1f2937'
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans SC', 'system-ui', 'sans-serif']
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'fade-in': 'fadeIn 0.3s ease-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+            'scale-in': 'scaleIn 0.2s ease-out'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            scaleIn: {
+              '0%': { opacity: '0', transform: 'scale(0.95)' },
+              '100%': { opacity: '1', transform: 'scale(1)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Element Plus -->
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .btn-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-gradient:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+    
+    .pulse-ring {
+      position: absolute;
+      border: 2px solid #10b981;
+      border-radius: 50%;
+      animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+    
+    /* Element Plus 主题 */
+    .el-button--primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+    }
+    .el-table th { background: #f9fafb !important; }
+    .el-pagination.is-background .el-pager li:not(.disabled).is-active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div v-if="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+      <div class="text-center">
+        <div class="w-10 h-10 border-4 border-gray-200 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-gray-500">加载中...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <!-- Element Plus -->
+  <script src="https://unpkg.com/element-plus"></script>
+  <script src="https://unpkg.com/element-plus/dist/locale/zh-cn.js"></script>
+  <!-- Vue Router -->
+  <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.prod.js"></script>
+  <!-- Pinia -->
+  <script src="https://unpkg.com/pinia@2/dist/pinia.iife.prod.js"></script>
+  <!-- Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    const { createApp, ref, reactive, computed, onMounted, watch, nextTick } = Vue;
+    const { createRouter, createWebHashHistory, useRoute, useRouter } = VueRouter;
+    const { createPinia } = Pinia;
+
+    // ============================================
+    // 登录页
+    // ============================================
+    const LoginView = {
+      template: `
+        <div class="min-h-screen flex">
+          <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+            <div class="w-full max-w-md">
+              <div class="mb-8">
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center">
+                    <i class="fas fa-fingerprint text-white text-xl"></i>
+                  </div>
+                  <span class="text-2xl font-bold gradient-text">森码云</span>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900 mt-6">欢迎回来</h1>
+                <p class="text-gray-500 mt-2">登录管理后台</p>
+              </div>
+
+              <form @submit.prevent="handleLogin" class="space-y-5">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                  <div class="relative">
+                    <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input v-model="form.username" type="text" 
+                           class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                           placeholder="请输入用户名">
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                  <div class="relative">
+                    <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input v-model="form.password" :type="showPassword ? 'text' : 'password'"
+                           class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                           placeholder="请输入密码">
+                    <button type="button" @click="showPassword = !showPassword"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" v-model="form.remember" class="rounded text-primary">
+                    <span class="text-sm text-gray-600">记住我</span>
+                  </label>
+                  <a href="#" class="text-sm text-primary hover:underline">忘记密码？</a>
+                </div>
+
+                <button type="submit" 
+                        class="w-full btn-gradient text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2"
+                        :disabled="loading">
+                  <i v-if="loading" class="fas fa-spinner fa-spin"></i>
+                  <span>{{ loading ? '登录中...' : '登录' }}</span>
+                </button>
+              </form>
+
+              <div class="mt-8 text-center text-sm text-gray-500">
+                <p>默认账号：admin / admin123</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hidden lg:flex lg:w-1/2 gradient-bg items-center justify-center p-12 relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+              <div class="absolute top-20 left-20 w-64 h-64 bg-white rounded-full blur-3xl animate-float"></div>
+              <div class="absolute bottom-20 right-20 w-80 h-80 bg-white rounded-full blur-3xl animate-float" style="animation-delay: -3s;"></div>
+            </div>
+            
+            <div class="relative text-white max-w-md">
+              <h2 class="text-4xl font-bold mb-6">管理后台</h2>
+              <p class="text-white/80 text-lg mb-8 leading-relaxed">
+                强大的管理功能，让您轻松管理实人认证业务。
+                查看数据统计、管理API通道、配置系统设置。
+              </p>
+              
+              <div class="space-y-4">
+                <div v-for="feature in features" :key="feature.title" 
+                     class="flex items-center gap-4 bg-white/10 backdrop-blur rounded-xl p-4">
+                  <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i :class="feature.icon" class="text-xl"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium">{{ feature.title }}</div>
+                    <div class="text-sm text-white/70">{{ feature.desc }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const router = useRouter();
+        const form = reactive({ username: 'admin', password: 'admin123', remember: false });
+        const showPassword = ref(false);
+        const loading = ref(false);
+        
+        const features = [
+          { icon: 'fas fa-chart-line', title: '数据统计', desc: '实时监控认证数据和趋势' },
+          { icon: 'fas fa-server', title: '通道管理', desc: '多通道配置和智能调度' },
+          { icon: 'fas fa-cog', title: '系统设置', desc: '灵活配置各项参数' }
+        ];
+        
+        function handleLogin() {
+          loading.value = true;
+          setTimeout(() => {
+            localStorage.setItem('admin_token', 'demo_token');
+            router.push('/');
+          }, 1000);
+        }
+        
+        return { form, showPassword, loading, features, handleLogin };
+      }
+    };
+
+    // ============================================
+    // 后台布局
+    // ============================================
+    const AdminLayout = {
+      template: `
+        <div class="min-h-screen bg-gray-50 flex">
+          <!-- 侧边栏 -->
+          <aside class="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-30 transition-all"
+                 :class="{ 'w-20': collapsed }">
+            <div class="h-16 flex items-center px-4 border-b border-gray-100">
+              <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-fingerprint text-white"></i>
+              </div>
+              <div v-if="!collapsed" class="ml-3">
+                <div class="font-bold text-gray-900">森码云</div>
+                <div class="text-xs text-gray-500">管理后台</div>
+              </div>
+            </div>
+
+            <nav class="flex-1 py-4 overflow-y-auto">
+              <div class="px-3 mb-4">
+                <div v-if="!collapsed" class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">主菜单</div>
+                <div v-for="item in menuItems" :key="item.path"
+                     @click="goTo(item.path)"
+                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all mb-1"
+                     :class="isActive(item.path) ? 'gradient-bg text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'">
+                  <i :class="item.icon" class="text-lg w-5 text-center"></i>
+                  <span v-if="!collapsed" class="text-sm font-medium">{{ item.name }}</span>
+                </div>
+              </div>
+              
+              <div class="px-3 mb-4">
+                <div v-if="!collapsed" class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">系统管理</div>
+                <div v-for="item in systemItems" :key="item.path"
+                     @click="goTo(item.path)"
+                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all mb-1"
+                     :class="isActive(item.path) ? 'gradient-bg text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'">
+                  <i :class="item.icon" class="text-lg w-5 text-center"></i>
+                  <span v-if="!collapsed" class="text-sm font-medium">{{ item.name }}</span>
+                </div>
+              </div>
+            </nav>
+
+            <div class="p-4 border-t border-gray-100">
+              <div @click="logout" 
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-600 hover:bg-red-50 hover:text-red-500 transition-all">
+                <i class="fas fa-sign-out-alt text-lg w-5 text-center"></i>
+                <span v-if="!collapsed" class="text-sm font-medium">退出登录</span>
+              </div>
+            </div>
+          </aside>
+
+          <div class="flex-1" :class="{ 'ml-64': !collapsed, 'ml-20': collapsed }">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-20">
+              <div class="flex items-center gap-4">
+                <button @click="collapsed = !collapsed" 
+                        class="w-10 h-10 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 transition">
+                  <i :class="collapsed ? 'fas fa-indent' : 'fas fa-outdent'"></i>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-900">{{ currentTitle }}</h1>
+              </div>
+              
+              <div class="flex items-center gap-4">
+                <button class="w-10 h-10 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 transition relative">
+                  <i class="fas fa-bell"></i>
+                  <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div class="flex items-center gap-3 cursor-pointer">
+                  <div class="w-9 h-9 rounded-full gradient-bg flex items-center justify-center text-white text-sm font-medium">
+                    A
+                  </div>
+                  <div class="hidden md:block">
+                    <div class="text-sm font-medium text-gray-900">admin</div>
+                    <div class="text-xs text-gray-500">管理员</div>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <main class="p-6">
+              <router-view v-slot="{ Component }">
+                <transition name="fade" mode="out-in">
+                  <component :is="Component" />
+                </transition>
+              </router-view>
+            </main>
+          </div>
+        </div>
+      `,
+      setup() {
+        const router = useRouter();
+        const route = useRoute();
+        const collapsed = ref(false);
+        
+        const menuItems = [
+          { path: '/dashboard', name: '仪表盘', icon: 'fas fa-chart-pie' },
+          { path: '/verifications', name: '认证记录', icon: 'fas fa-list-alt' },
+          { path: '/channels', name: 'API通道', icon: 'fas fa-server' }
+        ];
+        
+        const systemItems = [
+          { path: '/mofang', name: '魔方财务', icon: 'fas fa-coins' },
+          { path: '/settings', name: '系统设置', icon: 'fas fa-cog' },
+          { path: '/logs', name: '操作日志', icon: 'fas fa-history' }
+        ];
+        
+        const currentTitle = computed(() => {
+          const allItems = [...menuItems, ...systemItems];
+          const item = allItems.find(i => route.path.startsWith(i.path));
+          return item ? item.name : '仪表盘';
+        });
+        
+        function isActive(path) {
+          return route.path.startsWith(path);
+        }
+        
+        function goTo(path) {
+          router.push(path);
+        }
+        
+        function logout() {
+          ElementPlus.ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            localStorage.removeItem('admin_token');
+            router.push('/login');
+          }).catch(() => {});
+        }
+        
+        return { collapsed, menuItems, systemItems, currentTitle, isActive, goTo, logout };
+      }
+    };
+
+    // ============================================
+    // 仪表盘
+    // ============================================
+    const DashboardView = {
+      template: `
+        <div class="space-y-6 animate-fade-in">
+          <!-- 统计卡片 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div v-for="(stat, index) in stats" :key="index"
+                 class="bg-white rounded-2xl p-6 shadow-sm card-hover">
+              <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                     :style="{ background: stat.color + '15' }">
+                  <i :class="stat.icon" class="text-xl" :style="{ color: stat.color }"></i>
+                </div>
+                <span class="text-sm" :class="stat.trend > 0 ? 'text-success' : 'text-danger'">
+                  <i :class="stat.trend > 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
+                  {{ Math.abs(stat.trend) }}%
+                </span>
+              </div>
+              <div class="text-2xl font-bold text-gray-900 mb-1">{{ stat.value }}</div>
+              <div class="text-sm text-gray-500">{{ stat.label }}</div>
+            </div>
+          </div>
+
+          <!-- 图表区域 -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">认证趋势</h3>
+                <div class="flex gap-2">
+                  <button v-for="range in ranges" :key="range.value"
+                          @click="activeRange = range.value"
+                          class="px-3 py-1 text-sm rounded-lg transition"
+                          :class="activeRange === range.value ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'">
+                    {{ range.label }}
+                  </button>
+                </div>
+              </div>
+              <div ref="trendChartRef" style="height: 300px;"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-900 mb-6">通道使用占比</h3>
+              <div ref="pieChartRef" style="height: 250px;"></div>
+              <div class="space-y-2 mt-4">
+                <div v-for="item in channelStats" :key="item.name" 
+                     class="flex items-center justify-between text-sm">
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full" :style="{ background: item.color }"></span>
+                    <span class="text-gray-600">{{ item.name }}</span>
+                  </div>
+                  <span class="font-medium text-gray-900">{{ item.value }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 最近记录 + 系统状态 -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">最近认证</h3>
+                <button @click="$router.push('/verifications')" class="text-sm text-primary hover:underline">查看全部</button>
+              </div>
+              <el-table :data="recentRecords" style="width: 100%" :show-header="true">
+                <el-table-column prop="id" label="编号" width="140">
+                  <template #default="scope">
+                    <span class="font-mono text-sm text-gray-600">{{ scope.row.id }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="user" label="用户" width="100"></el-table-column>
+                <el-table-column prop="status" label="状态" width="80">
+                  <template #default="scope">
+                    <el-tag :type="scope.row.status === '通过' ? 'success' : 'danger'" size="small">
+                      {{ scope.row.status }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="channel" label="通道" width="100"></el-table-column>
+                <el-table-column prop="time" label="时间"></el-table-column>
+              </el-table>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-900 mb-6">系统状态</h3>
+              <div class="space-y-4">
+                <div v-for="item in systemStatus" :key="item.name"
+                     class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                         :style="{ background: item.color + '15' }">
+                      <i :class="item.icon" :style="{ color: item.color }"></i>
+                    </div>
+                    <div>
+                      <div class="text-sm font-medium text-gray-900">{{ item.name }}</div>
+                      <div class="text-xs text-gray-500">{{ item.desc }}</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1 text-success text-sm">
+                    <span class="w-2 h-2 bg-success rounded-full animate-pulse"></span>
+                    正常
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const trendChartRef = ref(null);
+        const pieChartRef = ref(null);
+        const activeRange = ref('7d');
+        
+        const ranges = [
+          { label: '7天', value: '7d' },
+          { label: '30天', value: '30d' }
+        ];
+        
+        const stats = [
+          { label: '今日认证', value: '1,234', icon: 'fas fa-user-check', color: '#667eea', trend: 12.5 },
+          { label: '通过数', value: '1,156', icon: 'fas fa-check-circle', color: '#10b981', trend: 8.3 },
+          { label: '失败数', value: '78', icon: 'fas fa-times-circle', color: '#ef4444', trend: -5.2 },
+          { label: '平均耗时', value: '0.48s', icon: 'fas fa-clock', color: '#f59e0b', trend: -3.1 }
+        ];
+        
+        const channelStats = [
+          { name: '腾讯云慧眼', value: 45, color: '#006eff' },
+          { name: '百度AI', value: 25, color: '#2932e1' },
+          { name: 'Azure', value: 15, color: '#00a4ef' },
+          { name: 'Face++', value: 10, color: '#3370ff' },
+          { name: '自研演示', value: 5, color: '#10b981' }
+        ];
+        
+        const recentRecords = [
+          { id: 'SM240315001', user: 'user_001', status: '通过', channel: '腾讯云', time: '14:30:28' },
+          { id: 'SM240315002', user: 'user_002', status: '通过', channel: '百度AI', time: '14:28:15' },
+          { id: 'SM240315003', user: 'user_003', status: '失败', channel: '腾讯云', time: '14:25:03' },
+          { id: 'SM240315004', user: 'user_004', status: '通过', channel: 'Azure', time: '14:22:45' },
+          { id: 'SM240315005', user: 'user_005', status: '通过', channel: 'Face++', time: '14:20:12' }
+        ];
+        
+        const systemStatus = [
+          { name: '服务状态', desc: '运行正常', icon: 'fas fa-server', color: '#10b981' },
+          { name: '可用通道', desc: '5 / 5', icon: 'fas fa-network-wired', color: '#667eea' },
+          { name: '响应时间', desc: '480ms', icon: 'fas fa-bolt', color: '#f59e0b' },
+          { name: '成功率', desc: '93.6%', icon: 'fas fa-chart-line', color: '#8b5cf6' }
+        ];
+        
+        onMounted(() => {
+          nextTick(() => {
+            const trendChart = echarts.init(trendChartRef.value);
+            trendChart.setOption({
+              tooltip: { trigger: 'axis' },
+              grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+              xAxis: {
+                type: 'category',
+                data: ['3/9', '3/10', '3/11', '3/12', '3/13', '3/14', '3/15'],
+                axisLine: { lineStyle: { color: '#e5e7eb' } },
+                axisLabel: { color: '#6b7280' }
+              },
+              yAxis: {
+                type: 'value',
+                splitLine: { lineStyle: { color: '#f3f4f6' } },
+                axisLabel: { color: '#6b7280' }
+              },
+              series: [{
+                name: '认证次数',
+                type: 'line',
+                smooth: true,
+                data: [820, 932, 901, 1034, 1290, 1330, 1234],
+                itemStyle: { color: '#667eea' },
+                areaStyle: {
+                  color: {
+                    type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                    colorStops: [
+                      { offset: 0, color: 'rgba(102, 126, 234, 0.3)' },
+                      { offset: 1, color: 'rgba(102, 126, 234, 0)' }
+                    ]
+                  }
+                }
+              }]
+            });
+            
+            const pieChart = echarts.init(pieChartRef.value);
+            pieChart.setOption({
+              tooltip: { trigger: 'item' },
+              series: [{
+                type: 'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                label: { show: false },
+                data: channelStats.map(c => ({ name: c.name, value: c.value, itemStyle: { color: c.color } }))
+              }]
+            });
+            
+            window.addEventListener('resize', () => {
+              trendChart.resize();
+              pieChart.resize();
+            });
+          });
+        });
+        
+        return {
+          trendChartRef, pieChartRef, activeRange, ranges,
+          stats, channelStats, recentRecords, systemStatus
+        };
+      }
+    };
+
+    // ============================================
+    // 认证记录
+    // ============================================
+    const VerificationsView = {
+      template: `
+        <div class="space-y-6 animate-fade-in">
+          <!-- 统计卡片 -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div v-for="stat in overviewStats" :key="stat.label"
+                 class="bg-white rounded-xl p-4 shadow-sm">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-2xl font-bold" :style="{ color: stat.color }">{{ stat.value }}</div>
+                  <div class="text-sm text-gray-500 mt-1">{{ stat.label }}</div>
+                </div>
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                     :style="{ background: stat.color + '15' }">
+                  <i :class="stat.icon" class="text-xl" :style="{ color: stat.color }"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 筛选栏 -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <div class="flex flex-wrap gap-4 items-end">
+              <div class="flex-1 min-w-[200px]">
+                <label class="block text-sm text-gray-600 mb-2">状态</label>
+                <el-select v-model="filters.status" placeholder="全部状态" clearable style="width: 100%">
+                  <el-option label="全部" value=""></el-option>
+                  <el-option label="通过" value="passed"></el-option>
+                  <el-option label="失败" value="failed"></el-option>
+                  <el-option label="进行中" value="pending"></el-option>
+                </el-select>
+              </div>
+              <div class="flex-1 min-w-[200px]">
+                <label class="block text-sm text-gray-600 mb-2">通道</label>
+                <el-select v-model="filters.channel" placeholder="全部通道" clearable style="width: 100%">
+                  <el-option label="腾讯云慧眼" value="tencent"></el-option>
+                  <el-option label="百度AI" value="baidu"></el-option>
+                  <el-option label="Azure" value="azure"></el-option>
+                  <el-option label="Face++" value="facepp"></el-option>
+                </el-select>
+              </div>
+              <div class="flex-1 min-w-[300px]">
+                <label class="block text-sm text-gray-600 mb-2">日期范围</label>
+                <el-date-picker
+                  v-model="filters.dateRange"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  style="width: 100%">
+                </el-date-picker>
+              </div>
+              <div class="flex-1 min-w-[200px]">
+                <label class="block text-sm text-gray-600 mb-2">搜索</label>
+                <el-input v-model="filters.keyword" placeholder="认证编号/用户ID" clearable>
+                  <template #prefix>
+                    <i class="fas fa-search text-gray-400"></i>
+                  </template>
+                </el-input>
+              </div>
+              <div class="flex gap-2">
+                <button class="btn-gradient text-white px-6 py-2 rounded-lg font-medium">
+                  <i class="fas fa-search mr-2"></i>查询
+                </button>
+                <button @click="resetFilters" class="border border-gray-300 text-gray-600 px-6 py-2 rounded-lg font-medium hover:bg-gray-50">
+                  <i class="fas fa-redo mr-2"></i>重置
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 数据表格 -->
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-900">认证记录</h3>
+              <div class="flex gap-2">
+                <button class="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm hover:bg-gray-50">
+                  <i class="fas fa-download mr-2"></i>导出
+                </button>
+              </div>
+            </div>
+            <el-table :data="tableData" style="width: 100%">
+              <el-table-column prop="id" label="认证编号" width="160">
+                <template #default="scope">
+                  <span class="font-mono text-sm text-primary cursor-pointer hover:underline"
+                        @click="showDetail(scope.row)">
+                    {{ scope.row.id }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="userId" label="用户ID" width="120"></el-table-column>
+              <el-table-column prop="status" label="状态" width="100">
+                <template #default="scope">
+                  <el-tag :type="statusType(scope.row.status)" size="small">
+                    {{ statusText(scope.row.status) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="channel" label="通道" width="120"></el-table-column>
+              <el-table-column prop="score" label="相似度" width="100">
+                <template #default="scope">
+                  <span class="font-medium">{{ scope.row.score }}%</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="liveness" label="活体" width="80">
+                <template #default="scope">
+                  <i :class="scope.row.liveness ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
+                </template>
+              </el-table-column>
+              <el-table-column prop="duration" label="耗时" width="80">
+                <template #default="scope">
+                  <span class="text-gray-500">{{ scope.row.duration }}ms</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="createdAt" label="创建时间"></el-table-column>
+              <el-table-column label="操作" width="100" fixed="right">
+                <template #default="scope">
+                  <button @click="showDetail(scope.row)" class="text-primary hover:underline text-sm">
+                    详情
+                  </button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="p-4 border-t border-gray-100 flex justify-end">
+              <el-pagination
+                v-model:current-page="currentPage"
+                :page-size="20"
+                :total="100"
+                layout="total, prev, pager, next, jumper">
+              </el-pagination>
+            </div>
+          </div>
+
+          <!-- 详情抽屉 -->
+          <el-drawer v-model="detailVisible" title="认证详情" size="500px">
+            <div v-if="currentDetail" class="space-y-6">
+              <div class="text-center pb-6 border-b border-gray-100">
+                <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                  <i class="fas fa-user text-4xl text-gray-400"></i>
+                </div>
+                <el-tag :type="statusType(currentDetail.status)" size="large">
+                  {{ statusText(currentDetail.status) }}
+                </el-tag>
+              </div>
+              
+              <div class="space-y-4">
+                <div class="flex justify-between py-2 border-b border-gray-50">
+                  <span class="text-gray-500">认证编号</span>
+                  <span class="font-mono">{{ currentDetail.id }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-gray-50">
+                  <span class="text-gray-500">用户ID</span>
+                  <span>{{ currentDetail.userId }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-gray-50">
+                  <span class="text-gray-500">认证通道</span>
+                  <span>{{ currentDetail.channel }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-gray-50">
+                  <span class="text-gray-500">相似度</span>
+                  <span class="font-semibold text-success">{{ currentDetail.score }}%</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-gray-50">
+                  <span class="text-gray-500">活体检测</span>
+                  <span :class="currentDetail.liveness ? 'text-success' : 'text-danger'">
+                    {{ currentDetail.liveness ? '通过' : '未通过' }}
+                  </span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-gray-50">
+                  <span class="text-gray-500">耗时</span>
+                  <span>{{ currentDetail.duration }}ms</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-gray-50">
+                  <span class="text-gray-500">创建时间</span>
+                  <span>{{ currentDetail.createdAt }}</span>
+                </div>
+                <div class="flex justify-between py-2">
+                  <span class="text-gray-500">IP地址</span>
+                  <span class="font-mono text-sm">192.168.1.100</span>
+                </div>
+              </div>
+            </div>
+          </el-drawer>
+        </div>
+      `,
+      setup() {
+        const filters = reactive({
+          status: '',
+          channel: '',
+          dateRange: [],
+          keyword: ''
+        });
+        const currentPage = ref(1);
+        const detailVisible = ref(false);
+        const currentDetail = ref(null);
+        
+        const overviewStats = [
+          { label: '总认证数', value: '12,345', icon: 'fas fa-list-alt', color: '#667eea' },
+          { label: '通过数', value: '11,567', icon: 'fas fa-check-circle', color: '#10b981' },
+          { label: '失败数', value: '778', icon: 'fas fa-times-circle', color: '#ef4444' },
+          { label: '通过率', value: '93.7%', icon: 'fas fa-chart-line', color: '#f59e0b' }
+        ];
+        
+        const tableData = [
+          { id: 'SM202403150001', userId: 'user_001', status: 'passed', channel: '腾讯云慧眼', score: 95.5, liveness: true, duration: 480, createdAt: '2024-03-15 14:30:28' },
+          { id: 'SM202403150002', userId: 'user_002', status: 'passed', channel: '百度AI', score: 92.3, liveness: true, duration: 520, createdAt: '2024-03-15 14:28:15' },
+          { id: 'SM202403150003', userId: 'user_003', status: 'failed', channel: '腾讯云慧眼', score: 45.2, liveness: false, duration: 380, createdAt: '2024-03-15 14:25:03' },
+          { id: 'SM202403150004', userId: 'user_004', status: 'passed', channel: 'Azure', score: 98.1, liveness: true, duration: 620, createdAt: '2024-03-15 14:22:45' },
+          { id: 'SM202403150005', userId: 'user_005', status: 'passed', channel: 'Face++', score: 89.7, liveness: true, duration: 450, createdAt: '2024-03-15 14:20:12' },
+          { id: 'SM202403150006', userId: 'user_006', status: 'pending', channel: '腾讯云慧眼', score: 0, liveness: false, duration: 0, createdAt: '2024-03-15 14:18:00' },
+          { id: 'SM202403150007', userId: 'user_007', status: 'passed', channel: '百度AI', score: 94.8, liveness: true, duration: 490, createdAt: '2024-03-15 14:15:30' },
+          { id: 'SM202403150008', userId: 'user_008', status: 'failed', channel: 'Azure', score: 38.5, liveness: false, duration: 510, createdAt: '2024-03-15 14:12:18' }
+        ];
+        
+        function statusType(status) {
+          const map = { passed: 'success', failed: 'danger', pending: 'warning' };
+          return map[status] || 'info';
+        }
+        
+        function statusText(status) {
+          const map = { passed: '通过', failed: '失败', pending: '进行中' };
+          return map[status] || status;
+        }
+        
+        function showDetail(row) {
+          currentDetail.value = row;
+          detailVisible.value = true;
+        }
+        
+        function resetFilters() {
+          filters.status = '';
+          filters.channel = '';
+          filters.dateRange = [];
+          filters.keyword = '';
+        }
+        
+        return {
+          filters, currentPage, detailVisible, currentDetail,
+          overviewStats, tableData,
+          statusType, statusText, showDetail, resetFilters
+        };
+      }
+    };
+
+    // ============================================
+    // API通道管理
+    // ============================================
+    const ChannelsView = {
+      template: `
+        <div class="space-y-6 animate-fade-in">
+          <!-- 介绍卡片 -->
+          <div class="gradient-bg rounded-2xl p-6 text-white relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+              <div class="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+            </div>
+            <div class="relative flex items-center gap-6">
+              <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-server text-3xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">多通道冗余架构</h3>
+                <p class="text-white/80">集成多家主流人脸识别服务商，智能调度、自动降级，确保服务永不中断</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 通道列表 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="channel in channels" :key="channel.code"
+                 class="bg-white rounded-2xl shadow-sm overflow-hidden card-hover">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center"
+                         :style="{ background: channel.color + '15' }">
+                      <i :class="channel.icon" class="text-2xl" :style="{ color: channel.color }"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-semibold text-gray-900">{{ channel.name }}</h4>
+                      <p class="text-sm text-gray-500">{{ channel.code }}</p>
+                    </div>
+                  </div>
+                  <el-switch v-model="channel.enabled" @change="toggleChannel(channel)"></el-switch>
+                </div>
+                
+                <p class="text-sm text-gray-600 mb-4">{{ channel.desc }}</p>
+                
+                <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                  <div class="bg-gray-50 rounded-lg p-2">
+                    <div class="text-lg font-bold text-gray-900">{{ channel.stats.success }}</div>
+                    <div class="text-xs text-gray-500">成功</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-lg p-2">
+                    <div class="text-lg font-bold text-gray-900">{{ channel.stats.fail }}</div>
+                    <div class="text-xs text-gray-500">失败</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-lg p-2">
+                    <div class="text-lg font-bold text-gray-900">{{ channel.stats.latency }}ms</div>
+                    <div class="text-xs text-gray-500">延迟</div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center justify-between text-sm mb-4">
+                  <span class="text-gray-500">优先级</span>
+                  <span class="font-medium">{{ channel.priority }}</span>
+                </div>
+                
+                <div class="flex gap-2">
+                  <button @click="testChannel(channel)" 
+                          class="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition">
+                    <i class="fas fa-plug mr-1"></i>测试
+                  </button>
+                  <button @click="editChannel(channel)" 
+                          class="flex-1 border border-primary text-primary py-2 rounded-lg text-sm hover:bg-primary/5 transition">
+                    <i class="fas fa-cog mr-1"></i>配置
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 配置弹窗 -->
+          <el-dialog v-model="configVisible" title="通道配置" width="500px">
+            <div v-if="currentChannel" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">通道名称</label>
+                <el-input v-model="currentChannel.name"></el-input>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">优先级</label>
+                <el-input-number v-model="currentChannel.priority" :min="1" :max="10"></el-input-number>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                <el-input v-model="currentChannel.config.apiKey" placeholder="请输入API Key"></el-input>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">API Secret</label>
+                <el-input v-model="currentChannel.config.apiSecret" type="password" show-password placeholder="请输入API Secret"></el-input>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">区域/端点</label>
+                <el-input v-model="currentChannel.config.endpoint" placeholder="请输入端点地址"></el-input>
+              </div>
+            </div>
+            <template #footer>
+              <button @click="configVisible = false" class="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg mr-2">取消</button>
+              <button @click="saveChannel" class="btn-gradient text-white px-4 py-2 rounded-lg">保存</button>
+            </template>
+          </el-dialog>
+        </div>
+      `,
+      setup() {
+        const configVisible = ref(false);
+        const currentChannel = ref(null);
+        
+        const channels = reactive([
+          {
+            code: 'tencent',
+            name: '腾讯云慧眼',
+            icon: 'fab fa-tencent-weibo',
+            color: '#006eff',
+            desc: '腾讯官方人脸识别服务，稳定可靠，支持多种活体检测方式',
+            enabled: true,
+            priority: 1,
+            stats: { success: 5678, fail: 123, latency: 450 },
+            config: { apiKey: '', apiSecret: '', endpoint: '' }
+          },
+          {
+            code: 'baidu',
+            name: '百度AI',
+            icon: 'fas fa-paw',
+            color: '#2932e1',
+            desc: '百度智能云人脸识别，算法领先，支持海量人脸库',
+            enabled: true,
+            priority: 2,
+            stats: { success: 3124, fail: 89, latency: 520 },
+            config: { apiKey: '', apiSecret: '', endpoint: '' }
+          },
+          {
+            code: 'azure',
+            name: 'Azure Face',
+            icon: 'fab fa-microsoft',
+            color: '#00a4ef',
+            desc: '微软Azure人脸识别，全球部署，企业级安全',
+            enabled: true,
+            priority: 3,
+            stats: { success: 1856, fail: 45, latency: 680 },
+            config: { apiKey: '', apiSecret: '', endpoint: '' }
+          },
+          {
+            code: 'facepp',
+            name: 'Face++',
+            icon: 'fas fa-face-smile',
+            color: '#3370ff',
+            desc: '旷视科技人脸识别，算法精准，国内访问速度快',
+            enabled: true,
+            priority: 4,
+            stats: { success: 1234, fail: 67, latency: 380 },
+            config: { apiKey: '', apiSecret: '', endpoint: '' }
+          },
+          {
+            code: 'local',
+            name: '自研演示',
+            icon: 'fas fa-code',
+            color: '#10b981',
+            desc: '本地自研算法演示，无需第三方密钥，适合测试环境',
+            enabled: true,
+            priority: 5,
+            stats: { success: 453, fail: 12, latency: 120 },
+            config: { apiKey: '', apiSecret: '', endpoint: '' }
+          }
+        ]);
+        
+        function toggleChannel(channel) {
+          ElementPlus.ElMessage.success(`${channel.name}已${channel.enabled ? '启用' : '禁用'}`);
+        }
+        
+        function testChannel(channel) {
+          ElementPlus.ElMessage.info(`正在测试${channel.name}连接...`);
+          setTimeout(() => {
+            ElementPlus.ElMessage.success(`${channel.name}连接测试成功！`);
+          }, 1500);
+        }
+        
+        function editChannel(channel) {
+          currentChannel.value = channel;
+          configVisible.value = true;
+        }
+        
+        function saveChannel() {
+          ElementPlus.ElMessage.success('配置保存成功！');
+          configVisible.value = false;
+        }
+        
+        return { channels, configVisible, currentChannel, toggleChannel, testChannel, editChannel, saveChannel };
+      }
+    };
+
+    // ============================================
+    // 魔方财务配置
+    // ============================================
+    const MofangView = {
+      template: `
+        <div class="space-y-6 animate-fade-in">
+          <!-- 介绍 -->
+          <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-6 text-white relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+              <div class="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+            </div>
+            <div class="relative flex items-center gap-6">
+              <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-coins text-3xl"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-xl font-bold mb-2">魔方财务对接</h3>
+                <p class="text-white/80">与魔方财务系统无缝对接，用户购买后自动发起认证，认证通过自动开通服务</p>
+              </div>
+              <div class="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full">
+                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                <span class="text-sm font-medium">{{ config.enabled ? '已启用' : '未启用' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 基础配置 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-900 mb-6">基础配置</h3>
+              <div class="space-y-5">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-medium text-gray-900">启用魔方财务对接</div>
+                    <div class="text-sm text-gray-500">开启后可与魔方财务系统联动</div>
+                  </div>
+                  <el-switch v-model="config.enabled"></el-switch>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">魔方财务地址</label>
+                  <el-input v-model="config.apiUrl" placeholder="https://your-domain.com"></el-input>
+                  <p class="text-xs text-gray-500 mt-1">魔方财务系统的访问地址</p>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">AppKey</label>
+                  <el-input v-model="config.appKey" placeholder="魔方财务AppKey"></el-input>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">AppSecret</label>
+                  <el-input v-model="config.appSecret" type="password" show-password placeholder="魔方财务AppSecret"></el-input>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">回调地址</label>
+                  <div class="flex gap-2">
+                    <el-input v-model="callbackUrl" readonly></el-input>
+                    <button @click="copyCallback" class="px-4 py-2 bg-gray-100 rounded-lg text-gray-600 hover:bg-gray-200 transition">
+                      <i class="fas fa-copy"></i>
+                    </button>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1">将此地址填入魔方财务的回调配置</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 产品映射 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">产品映射</h3>
+                <button @click="addMapping" class="text-primary hover:underline text-sm">
+                  <i class="fas fa-plus mr-1"></i>添加
+                </button>
+              </div>
+              <div class="space-y-3">
+                <div v-for="(item, index) in mappings" :key="index"
+                     class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div class="flex-1">
+                    <label class="text-xs text-gray-500">产品ID</label>
+                    <el-input v-model="item.productId" size="small" placeholder="产品ID"></el-input>
+                  </div>
+                  <div class="flex-1">
+                    <label class="text-xs text-gray-500">认证类型</label>
+                    <el-select v-model="item.authType" size="small" style="width: 100%">
+                      <el-option label="人脸比对" value="face"></el-option>
+                      <el-option label="活体检测" value="liveness"></el-option>
+                      <el-option label="完整核身" value="full"></el-option>
+                    </el-select>
+                  </div>
+                  <div class="w-20">
+                    <label class="text-xs text-gray-500">次数</label>
+                    <el-input-number v-model="item.times" size="small" :min="1" style="width: 100%"></el-input-number>
+                  </div>
+                  <button @click="removeMapping(index)" 
+                          class="mt-5 w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition flex items-center justify-center">
+                    <i class="fas fa-times text-sm"></i>
+                  </button>
+                </div>
+              </div>
+              <div v-if="mappings.length === 0" class="text-center py-8 text-gray-400">
+                <i class="fas fa-inbox text-4xl mb-2"></i>
+                <p>暂无产品映射</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 最近订单 -->
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-900">最近订单</h3>
+              <button class="text-sm text-primary hover:underline">查看全部</button>
+            </div>
+            <el-table :data="orders" style="width: 100%">
+              <el-table-column prop="orderNo" label="订单号" width="180">
+                <template #default="scope">
+                  <span class="font-mono text-sm">{{ scope.row.orderNo }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="username" label="用户" width="120"></el-table-column>
+              <el-table-column prop="productName" label="产品"></el-table-column>
+              <el-table-column prop="amount" label="金额" width="100">
+                <template #default="scope">
+                  <span class="font-medium">¥{{ scope.row.amount }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="orderStatus" label="订单状态" width="100">
+                <template #default="scope">
+                  <el-tag :type="scope.row.orderStatus === 'paid' ? 'success' : 'warning'" size="small">
+                    {{ scope.row.orderStatus === 'paid' ? '已支付' : '待支付' }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="authStatus" label="认证状态" width="100">
+                <template #default="scope">
+                  <el-tag :type="authStatusType(scope.row.authStatus)" size="small">
+                    {{ authStatusText(scope.row.authStatus) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="createdAt" label="时间"></el-table-column>
+            </el-table>
+          </div>
+
+          <!-- 保存按钮 -->
+          <div class="flex justify-end gap-3">
+            <button @click="testConnection" class="border border-gray-300 text-gray-600 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-50 transition">
+              <i class="fas fa-plug mr-2"></i>测试连接
+            </button>
+            <button @click="saveConfig" class="btn-gradient text-white px-6 py-2.5 rounded-xl font-medium">
+              <i class="fas fa-save mr-2"></i>保存配置
+            </button>
+          </div>
+        </div>
+      `,
+      setup() {
+        const config = reactive({
+          enabled: true,
+          apiUrl: 'https://billing.example.com',
+          appKey: 'mf_app_xxxxxx',
+          appSecret: 'mf_secret_xxxxxx'
+        });
+        
+        const callbackUrl = computed(() => {
+          return window.location.origin + '/mofang/callback';
+        });
+        
+        const mappings = reactive([
+          { productId: '1001', authType: 'full', times: 100 },
+          { productId: '1002', authType: 'face', times: 500 },
+          { productId: '1003', authType: 'liveness', times: 1000 }
+        ]);
+        
+        const orders = [
+          { orderNo: 'MF202403150001', username: 'user001', productName: '实人认证-100次', amount: '29.90', orderStatus: 'paid', authStatus: 'completed', createdAt: '2024-03-15 14:30:00' },
+          { orderNo: 'MF202403150002', username: 'user002', productName: '实人认证-500次', amount: '99.00', orderStatus: 'paid', authStatus: 'pending', createdAt: '2024-03-15 13:20:00' },
+          { orderNo: 'MF202403150003', username: 'user003', productName: '活体检测-1000次', amount: '199.00', orderStatus: 'pending', authStatus: 'none', createdAt: '2024-03-15 12:10:00' }
+        ];
+        
+        function authStatusType(status) {
+          const map = { completed: 'success', pending: 'warning', none: 'info', failed: 'danger' };
+          return map[status] || 'info';
+        }
+        
+        function authStatusText(status) {
+          const map = { completed: '已完成', pending: '进行中', none: '未开始', failed: '失败' };
+          return map[status] || status;
+        }
+        
+        function copyCallback() {
+          navigator.clipboard.writeText(callbackUrl.value);
+          ElementPlus.ElMessage.success('已复制到剪贴板');
+        }
+        
+        function addMapping() {
+          mappings.push({ productId: '', authType: 'face', times: 100 });
+        }
+        
+        function removeMapping(index) {
+          mappings.splice(index, 1);
+        }
+        
+        function testConnection() {
+          ElementPlus.ElMessage.info('正在测试连接...');
+          setTimeout(() => {
+            ElementPlus.ElMessage.success('连接测试成功！');
+          }, 1500);
+        }
+        
+        function saveConfig() {
+          ElementPlus.ElMessage.success('配置保存成功！');
+        }
+        
+        return {
+          config, callbackUrl, mappings, orders,
+          authStatusType, authStatusText,
+          copyCallback, addMapping, removeMapping, testConnection, saveConfig
+        };
+      }
+    };
+
+    // ============================================
+    // 系统设置
+    // ============================================
+    const SettingsView = {
+      template: `
+        <div class="space-y-6 animate-fade-in">
+          <!-- 标签页 -->
+          <div class="bg-white rounded-2xl p-2 shadow-sm inline-flex">
+            <button v-for="tab in tabs" :key="tab.key"
+                    @click="activeTab = tab.key"
+                    class="px-6 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-2"
+                    :class="activeTab === tab.key ? 'gradient-bg text-white shadow' : 'text-gray-600 hover:bg-gray-50'">
+              <i :class="tab.icon"></i>
+              {{ tab.label }}
+            </button>
+          </div>
+
+          <!-- 基本设置 -->
+          <div v-show="activeTab === 'basic'" class="bg-white rounded-2xl p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">基本设置</h3>
+            <div class="max-w-2xl space-y-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">站点名称</label>
+                <el-input v-model="basic.siteName"></el-input>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">站点描述</label>
+                <el-input v-model="basic.siteDesc" type="textarea" :rows="3"></el-input>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">默认语言</label>
+                  <el-select v-model="basic.defaultLang" style="width: 100%">
+                    <el-option label="简体中文" value="zh-CN"></el-option>
+                    <el-option label="English" value="en"></el-option>
+                  </el-select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">时区</label>
+                  <el-select v-model="basic.timezone" style="width: 100%">
+                    <el-option label="Asia/Shanghai (UTC+8)" value="Asia/Shanghai"></el-option>
+                    <el-option label="UTC" value="UTC"></el-option>
+                  </el-select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">ICP备案号</label>
+                <el-input v-model="basic.icp" placeholder="如：京ICP备12345678号"></el-input>
+              </div>
+            </div>
+          </div>
+
+          <!-- 认证设置 -->
+          <div v-show="activeTab === 'auth'" class="bg-white rounded-2xl p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">认证设置</h3>
+            <div class="max-w-2xl space-y-5">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">匹配阈值</label>
+                  <el-input-number v-model="auth.matchThreshold" :min="0" :max="100" style="width: 100%"></el-input-number>
+                  <p class="text-xs text-gray-500 mt-1">相似度高于此值视为匹配成功</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Token有效期(秒)</label>
+                  <el-input-number v-model="auth.tokenTtl" :min="60" :max="3600" style="width: 100%"></el-input-number>
+                  <p class="text-xs text-gray-500 mt-1">认证Token的有效时长</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">活体动作数量</label>
+                  <el-input-number v-model="auth.livenessActions" :min="1" :max="5" style="width: 100%"></el-input-number>
+                  <p class="text-xs text-gray-500 mt-1">每次活体检测的动作数</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">动作超时(秒)</label>
+                  <el-input-number v-model="auth.actionTimeout" :min="5" :max="60" style="width: 100%"></el-input-number>
+                  <p class="text-xs text-gray-500 mt-1">单个动作的完成时限</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <div class="font-medium text-gray-900">强制活体检测</div>
+                  <div class="text-sm text-gray-500">所有人脸比对都必须通过活体检测</div>
+                </div>
+                <el-switch v-model="auth.requireLiveness"></el-switch>
+              </div>
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <div class="font-medium text-gray-900">保存人脸图片</div>
+                  <div class="text-sm text-gray-500">保存采集到的人脸图片（加密存储）</div>
+                </div>
+                <el-switch v-model="auth.saveFaceImage"></el-switch>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">图片保留天数</label>
+                <el-input-number v-model="auth.imageRetentionDays" :min="0" :max="365" style="width: 200px"></el-input-number>
+                <p class="text-xs text-gray-500 mt-1">人脸图片自动删除天数，0表示永久保留</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 安全设置 -->
+          <div v-show="activeTab === 'security'" class="bg-white rounded-2xl p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">安全设置</h3>
+            <div class="max-w-2xl space-y-5">
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <div class="font-medium text-gray-900">启用速率限制</div>
+                  <div class="text-sm text-gray-500">限制单IP单位时间内的请求次数</div>
+                </div>
+                <el-switch v-model="security.rateLimitEnabled"></el-switch>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">每分钟请求上限</label>
+                  <el-input-number v-model="security.rateLimitPerMinute" :min="10" :max="10000" style="width: 100%" :disabled="!security.rateLimitEnabled"></el-input-number>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">每小时请求上限</label>
+                  <el-input-number v-model="security.rateLimitPerHour" :min="100" :max="100000" style="width: 100%" :disabled="!security.rateLimitEnabled"></el-input-number>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <div class="font-medium text-gray-900">启用IP白名单</div>
+                  <div class="text-sm text-gray-500">只允许白名单内的IP访问API</div>
+                </div>
+                <el-switch v-model="security.ipWhitelistEnabled"></el-switch>
+              </div>
+              <div v-if="security.ipWhitelistEnabled">
+                <label class="block text-sm font-medium text-gray-700 mb-2">IP白名单</label>
+                <el-input v-model="security.ipWhitelist" type="textarea" :rows="5" placeholder="每行一个IP或IP段&#10;例如：&#10;192.168.1.1&#10;10.0.0.0/24"></el-input>
+              </div>
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <div class="font-medium text-gray-900">敏感数据加密存储</div>
+                  <div class="text-sm text-gray-500">使用AES-256加密存储身份证号等敏感信息</div>
+                </div>
+                <el-switch v-model="security.encryptData"></el-switch>
+              </div>
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <div class="font-medium text-gray-900">记录操作日志</div>
+                  <div class="text-sm text-gray-500">记录管理员的所有操作</div>
+                </div>
+                <el-switch v-model="security.logEnabled"></el-switch>
+              </div>
+            </div>
+          </div>
+
+          <!-- 通知设置 -->
+          <div v-show="activeTab === 'notify'" class="bg-white rounded-2xl p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">通知设置</h3>
+            <div class="max-w-2xl space-y-5">
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <div class="font-medium text-gray-900">邮件通知</div>
+                  <div class="text-sm text-gray-500">异常告警、系统通知通过邮件发送</div>
+                </div>
+                <el-switch v-model="notify.emailEnabled"></el-switch>
+              </div>
+              <div v-if="notify.emailEnabled" class="space-y-4 pl-4 border-l-2 border-gray-200">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">SMTP服务器</label>
+                  <el-input v-model="notify.smtpHost" placeholder="smtp.example.com"></el-input>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">端口</label>
+                    <el-input-number v-model="notify.smtpPort" :min="1" :max="65535" style="width: 100%"></el-input-number>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">加密方式</label>
+                    <el-select v-model="notify.smtpSecure" style="width: 100%">
+                      <el-option label="SSL" value="ssl"></el-option>
+                      <el-option label="TLS" value="tls"></el-option>
+                      <el-option label="无" value="none"></el-option>
+                    </el-select>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">发件人邮箱</label>
+                  <el-input v-model="notify.smtpUser" type="email"></el-input>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">发件人密码</label>
+                  <el-input v-model="notify.smtpPass" type="password" show-password></el-input>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">管理员通知邮箱</label>
+                <el-input v-model="notify.adminEmail" placeholder="多个邮箱用逗号分隔"></el-input>
+                <p class="text-xs text-gray-500 mt-1">异常告警、系统通知将发送到此邮箱</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 保存按钮 -->
+          <div class="flex justify-end gap-3">
+            <button @click="resetSettings" class="border border-gray-300 text-gray-600 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-50 transition">
+              <i class="fas fa-redo mr-2"></i>重置
+            </button>
+            <button @click="saveSettings" class="btn-gradient text-white px-6 py-2.5 rounded-xl font-medium">
+              <i class="fas fa-save mr-2"></i>保存设置
+            </button>
+          </div>
+        </div>
+      `,
+      setup() {
+        const activeTab = ref('basic');
+        
+        const tabs = [
+          { key: 'basic', label: '基本设置', icon: 'fas fa-cog' },
+          { key: 'auth', label: '认证设置', icon: 'fas fa-user-shield' },
+          { key: 'security', label: '安全设置', icon: 'fas fa-shield-alt' },
+          { key: 'notify', label: '通知设置', icon: 'fas fa-bell' }
+        ];
+        
+        const basic = reactive({
+          siteName: '森码云实人认证',
+          siteDesc: '安全、可靠、易用的实人认证服务',
+          defaultLang: 'zh-CN',
+          timezone: 'Asia/Shanghai',
+          icp: ''
+        });
+        
+        const auth = reactive({
+          matchThreshold: 80,
+          tokenTtl: 300,
+          livenessActions: 2,
+          actionTimeout: 15,
+          requireLiveness: true,
+          saveFaceImage: true,
+          imageRetentionDays: 90
+        });
+        
+        const security = reactive({
+          rateLimitEnabled: true,
+          rateLimitPerMinute: 60,
+          rateLimitPerHour: 1000,
+          ipWhitelistEnabled: false,
+          ipWhitelist: '',
+          encryptData: true,
+          logEnabled: true
+        });
+        
+        const notify = reactive({
+          emailEnabled: false,
+          smtpHost: '',
+          smtpPort: 465,
+          smtpSecure: 'ssl',
+          smtpUser: '',
+          smtpPass: '',
+          adminEmail: ''
+        });
+        
+        function resetSettings() {
+          ElementPlus.ElMessageBox.confirm('确定要重置当前设置吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            ElementPlus.ElMessage.success('已重置');
+          }).catch(() => {});
+        }
+        
+        function saveSettings() {
+          ElementPlus.ElMessage.success('设置保存成功！');
+        }
+        
+        return {
+          activeTab, tabs,
+          basic, auth, security, notify,
+          resetSettings, saveSettings
+        };
+      }
+    };
+
+    // ============================================
+    // 操作日志
+    // ============================================
+    const LogsView = {
+      template: `
+        <div class="space-y-6 animate-fade-in">
+          <!-- 筛选栏 -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <div class="flex flex-wrap gap-4 items-end">
+              <div class="flex-1 min-w-[150px]">
+                <label class="block text-sm text-gray-600 mb-2">操作类型</label>
+                <el-select v-model="filters.type" placeholder="全部类型" clearable style="width: 100%">
+                  <el-option label="登录" value="login"></el-option>
+                  <el-option label="配置修改" value="config"></el-option>
+                  <el-option label="通道管理" value="channel"></el-option>
+                  <el-option label="删除操作" value="delete"></el-option>
+                  <el-option label="其他" value="other"></el-option>
+                </el-select>
+              </div>
+              <div class="flex-1 min-w-[150px]">
+                <label class="block text-sm text-gray-600 mb-2">操作人</label>
+                <el-input v-model="filters.username" placeholder="用户名" clearable></el-input>
+              </div>
+              <div class="flex-1 min-w-[250px]">
+                <label class="block text-sm text-gray-600 mb-2">日期范围</label>
+                <el-date-picker
+                  v-model="filters.dateRange"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  style="width: 100%">
+                </el-date-picker>
+              </div>
+              <div class="flex gap-2">
+                <button class="btn-gradient text-white px-6 py-2 rounded-lg font-medium">
+                  <i class="fas fa-search mr-2"></i>查询
+                </button>
+                <button @click="resetFilters" class="border border-gray-300 text-gray-600 px-6 py-2 rounded-lg font-medium hover:bg-gray-50">
+                  <i class="fas fa-redo mr-2"></i>重置
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 日志列表 -->
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-900">操作日志</h3>
+              <span class="text-sm text-gray-500">共 {{ total }} 条记录</span>
+            </div>
+            <el-table :data="logs" style="width: 100%">
+              <el-table-column prop="createdAt" label="时间" width="180">
+                <template #default="scope">
+                  <span class="text-gray-500">{{ scope.row.createdAt }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="username" label="操作人" width="120"></el-table-column>
+              <el-table-column prop="type" label="操作类型" width="120">
+                <template #default="scope">
+                  <el-tag :type="typeColor(scope.row.type)" size="small">
+                    {{ typeText(scope.row.type) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="action" label="操作描述"></el-table-column>
+              <el-table-column prop="ip" label="IP地址" width="140">
+                <template #default="scope">
+                  <span class="font-mono text-sm text-gray-600">{{ scope.row.ip }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="status" label="状态" width="100">
+                <template #default="scope">
+                  <el-tag :type="scope.row.status === 'success' ? 'success' : 'danger'" size="small">
+                    {{ scope.row.status === 'success' ? '成功' : '失败' }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="p-4 border-t border-gray-100 flex justify-end">
+              <el-pagination
+                v-model:current-page="currentPage"
+                :page-size="20"
+                :total="328"
+                layout="total, prev, pager, next, jumper">
+              </el-pagination>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const filters = reactive({
+          type: '',
+          username: '',
+          dateRange: []
+        });
+        const currentPage = ref(1);
+        const total = ref(328);
+        
+        const logs = [
+          { id: 1, username: 'admin', type: 'login', action: '管理员登录', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-15 14:30:25' },
+          { id: 2, username: 'admin', type: 'config', action: '修改系统设置-认证阈值', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-15 14:25:10' },
+          { id: 3, username: 'admin', type: 'channel', action: '启用百度AI通道', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-15 14:20:33' },
+          { id: 4, username: 'admin', type: 'channel', action: '测试腾讯云通道连接', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-15 14:15:45' },
+          { id: 5, username: 'admin', type: 'config', action: '保存魔方财务配置', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-15 14:10:00' },
+          { id: 6, username: 'admin', type: 'delete', action: '删除认证记录 SM202403140099', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-15 13:50:20' },
+          { id: 7, username: 'admin', type: 'login', action: '管理员登录', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-15 09:00:00' },
+          { id: 8, username: 'admin', type: 'login', action: '管理员登录', ip: '10.0.0.5', status: 'failed', createdAt: '2024-03-14 22:30:15' },
+          { id: 9, username: 'admin', type: 'config', action: '修改管理员密码', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-14 16:45:30' },
+          { id: 10, username: 'admin', type: 'other', action: '导出认证记录', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-14 15:20:00' },
+          { id: 11, username: 'admin', type: 'channel', action: '添加Face++通道', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-14 14:10:25' },
+          { id: 12, username: 'admin', type: 'channel', action: '调整通道优先级', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-14 13:55:40' },
+          { id: 13, username: 'admin', type: 'config', action: '保存安全设置', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-14 11:30:00' },
+          { id: 14, username: 'admin', type: 'login', action: '管理员登录', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-14 09:05:12' },
+          { id: 15, username: 'admin', type: 'other', action: '清理过期数据', ip: '192.168.1.100', status: 'success', createdAt: '2024-03-13 23:00:00' }
+        ];
+        
+        function typeText(type) {
+          const map = { login: '登录', config: '配置', channel: '通道', delete: '删除', other: '其他' };
+          return map[type] || type;
+        }
+        
+        function typeColor(type) {
+          const map = { login: '', config: 'warning', channel: 'primary', delete: 'danger', other: 'info' };
+          return map[type] || 'info';
+        }
+        
+        function resetFilters() {
+          filters.type = '';
+          filters.username = '';
+          filters.dateRange = [];
+        }
+        
+        return { filters, currentPage, total, logs, typeText, typeColor, resetFilters };
+      }
+    };
+
+    // ============================================
+    // 路由配置
+    // ============================================
+    const routes = [
+      { path: '/login', component: LoginView },
+      {
+        path: '/',
+        component: AdminLayout,
+        redirect: '/dashboard',
+        children: [
+          { path: 'dashboard', component: DashboardView },
+          { path: 'verifications', component: VerificationsView },
+          { path: 'channels', component: ChannelsView },
+          { path: 'mofang', component: MofangView },
+          { path: 'settings', component: SettingsView },
+          { path: 'logs', component: LogsView }
+        ]
+      }
+    ];
+
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes
+    });
+
+    // 路由守卫
+    router.beforeEach((to, from, next) => {
+      const token = localStorage.getItem('admin_token');
+      if (to.path !== '/login' && !token) {
+        next('/login');
+      } else {
+        next();
+      }
+    });
+
+    // ============================================
+    // 创建应用
+    // ============================================
+    const app = createApp({
+      setup() {
+        const loading = ref(true);
+        
+        onMounted(() => {
+          setTimeout(() => {
+            loading.value = false;
+          }, 300);
+        });
+        
+        return { loading };
+      }
+    });
+
+    app.use(router);
+    app.use(createPinia());
+    app.use(ElementPlus, { locale: ElementPlusLocaleZhCn });
+
+    app.mount('#app');
+  </script>
+</body>
+</html>

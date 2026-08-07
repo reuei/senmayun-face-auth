@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API文档 - 森码云实人认证</title>
+  
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            success: '#10b981',
+            danger: '#ef4444',
+            warning: '#f59e0b',
+            info: '#3b82f6'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif; }
+    
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .code-block {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    
+    .code-block .keyword { color: #c084fc; }
+    .code-block .string { color: #86efac; }
+    .code-block .comment { color: #64748b; }
+    .code-block .function { color: #60a5fa; }
+    .code-block .number { color: #fbbf24; }
+    
+    .method-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .method-get { background: #dbeafe; color: #1d4ed8; }
+    .method-post { background: #dcfce7; color: #15803d; }
+    
+    .sidebar-link {
+      transition: all 0.2s ease;
+    }
+    .sidebar-link:hover {
+      background: #f3f4f6;
+      color: #667eea;
+    }
+    .sidebar-link.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      color: #667eea;
+      font-weight: 500;
+    }
+    
+    .api-card {
+      transition: all 0.3s ease;
+    }
+    .api-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+    
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div id="app">
+    <!-- 顶部导航 -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
+              <i class="fas fa-fingerprint text-white"></i>
+            </div>
+            <div>
+              <div class="font-bold text-gray-900">森码云</div>
+              <div class="text-xs text-gray-500">API文档</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <a href="/" class="text-gray-600 hover:text-primary text-sm transition">
+              <i class="fas fa-home mr-1"></i>首页
+            </a>
+            <a href="/admin.html" class="text-gray-600 hover:text-primary text-sm transition">
+              <i class="fas fa-cog mr-1"></i>管理后台
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex gap-8">
+        <!-- 侧边栏 -->
+        <aside class="w-64 flex-shrink-0">
+          <div class="sticky top-24">
+            <div class="bg-white rounded-2xl shadow-sm p-4">
+              <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">
+                快速开始
+              </div>
+              <div class="space-y-1">
+                <a href="#intro" class="sidebar-link active block px-3 py-2 rounded-lg text-sm text-gray-600">
+                  <i class="fas fa-book mr-2 text-gray-400"></i>简介
+                </a>
+                <a href="#auth" class="sidebar-link block px-3 py-2 rounded-lg text-sm text-gray-600">
+                  <i class="fas fa-key mr-2 text-gray-400"></i>认证方式
+                </a>
+                <a href="#errors" class="sidebar-link block px-3 py-2 rounded-lg text-sm text-gray-600">
+                  <i class="fas fa-exclamation-triangle mr-2 text-gray-400"></i>错误码
+                </a>
+              </div>
+              
+              <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-6 px-3">
+                认证API
+              </div>
+              <div class="space-y-1">
+                <a href="#api-init" class="sidebar-link block px-3 py-2 rounded-lg text-sm text-gray-600">
+                  <i class="fas fa-play mr-2 text-gray-400"></i>初始化认证
+                </a>
+                <a href="#api-verify" class="sidebar-link block px-3 py-2 rounded-lg text-sm text-gray-600">
+                  <i class="fas fa-user-check mr-2 text-gray-400"></i>提交认证
+                </a>
+                <a href="#api-result" class="sidebar-link block px-3 py-2 rounded-lg text-sm text-gray-600">
+                  <i class="fas fa-search mr-2 text-gray-400"></i>查询结果
+                </a>
+              </div>
+              
+              <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-6 px-3">
+                SDK示例
+              </div>
+              <div class="space-y-1">
+                <a href="#sdk-php" class="sidebar-link block px-3 py-2 rounded-lg text-sm text-gray-600">
+                  <i class="fab fa-php mr-2 text-gray-400"></i>PHP
+                </a>
+                <a href="#sdk-js" class="sidebar-link block px-3 py-2 rounded-lg text-sm text-gray-600">
+                  <i class="fab fa-js mr-2 text-gray-400"></i>JavaScript
+                </a>
+                <a href="#sdk-python" class="sidebar-link block px-3 py-2 rounded-lg text-sm text-gray-600">
+                  <i class="fab fa-python mr-2 text-gray-400"></i>Python
+                </a>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- 主内容 -->
+        <main class="flex-1 min-w-0">
+          <!-- 标题区 -->
+          <div class="gradient-bg rounded-2xl p-8 text-white mb-8 relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+              <div class="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+            </div>
+            <div class="relative">
+              <h1 class="text-3xl font-bold mb-2">API 文档</h1>
+              <p class="text-white/80">森码云实人认证系统 API 接口文档 v1.0</p>
+              <div class="flex gap-4 mt-6">
+                <div class="flex items-center gap-2 bg-white/20 backdrop-blur px-4 py-2 rounded-full text-sm">
+                  <i class="fas fa-bolt"></i>
+                  <span>RESTful API</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white/20 backdrop-blur px-4 py-2 rounded-full text-sm">
+                  <i class="fas fa-lock"></i>
+                  <span>HMAC签名</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white/20 backdrop-blur px-4 py-2 rounded-full text-sm">
+                  <i class="fas fa-globe"></i>
+                  <span>JSON格式</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 简介 -->
+          <section id="intro" class="bg-white rounded-2xl shadow-sm p-8 mb-8 api-card">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">简介</h2>
+            <p class="text-gray-600 leading-relaxed mb-6">
+              森码云实人认证系统提供了简单易用的 RESTful API，您可以通过这些接口快速集成人脸认证功能到您的应用中。
+              支持活体检测、人脸比对、身份核验等多种认证方式。
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-blue-50 rounded-xl p-5">
+                <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-3">
+                  <i class="fas fa-bolt text-blue-500 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-1">快速接入</h3>
+                <p class="text-sm text-gray-600">只需三步，10分钟完成接入</p>
+              </div>
+              <div class="bg-green-50 rounded-xl p-5">
+                <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-3">
+                  <i class="fas fa-shield-alt text-green-500 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-1">安全可靠</h3>
+                <p class="text-sm text-gray-600">全程加密，数据安全有保障</p>
+              </div>
+              <div class="bg-purple-50 rounded-xl p-5">
+                <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center mb-3">
+                  <i class="fas fa-server text-purple-500 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-1">高可用</h3>
+                <p class="text-sm text-gray-600">多通道冗余，99.99%可用性</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 认证方式 -->
+          <section id="auth" class="bg-white rounded-2xl shadow-sm p-8 mb-8 api-card">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">认证方式</h2>
+            <p class="text-gray-600 mb-6">
+              所有 API 请求都需要携带 API Key 进行身份验证。您可以在管理后台创建和管理您的 API Key。
+            </p>
+            
+            <div class="bg-gray-50 rounded-xl p-5 mb-6">
+              <h3 class="font-semibold text-gray-900 mb-3">
+                <i class="fas fa-key text-primary mr-2"></i>API Key 认证
+              </h3>
+              <p class="text-sm text-gray-600 mb-4">
+                在请求头中携带 API Key：
+              </p>
+              <div class="code-block">
+                <span class="comment">// 请求头</span><br>
+                <span class="keyword">Authorization</span>: Bearer YOUR_API_KEY<br><br>
+                <span class="comment">// 或者在请求体中</span><br>
+                {<br>
+                &nbsp;&nbsp;<span class="string">"api_key"</span>: <span class="string">"YOUR_API_KEY"</span><br>
+                }
+              </div>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-5">
+              <div class="flex gap-3">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mt-0.5"></i>
+                <div>
+                  <h3 class="font-semibold text-yellow-800 mb-1">注意事项</h3>
+                  <ul class="text-sm text-yellow-700 space-y-1">
+                    <li>• 请妥善保管您的 API Key，不要在客户端代码中暴露</li>
+                    <li>• 建议在服务端调用 API，避免 API Key 泄露</li>
+                    <li>• 如发现 API Key 泄露，请立即在管理后台重置</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 错误码 -->
+          <section id="errors" class="bg-white rounded-2xl shadow-sm p-8 mb-8 api-card">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">错误码</h2>
+            <p class="text-gray-600 mb-6">
+              API 返回统一的错误码格式，您可以根据错误码判断请求状态。
+            </p>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="bg-gray-50 text-left">
+                    <th class="px-4 py-3 font-semibold text-gray-700 rounded-l-lg">错误码</th>
+                    <th class="px-4 py-3 font-semibold text-gray-700">说明</th>
+                    <th class="px-4 py-3 font-semibold text-gray-700 rounded-r-lg">解决方案</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-success">200</td>
+                    <td class="px-4 py-3 text-gray-700">成功</td>
+                    <td class="px-4 py-3 text-gray-500">-</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-danger">400</td>
+                    <td class="px-4 py-3 text-gray-700">请求参数错误</td>
+                    <td class="px-4 py-3 text-gray-500">检查请求参数是否完整</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-warning">401</td>
+                    <td class="px-4 py-3 text-gray-700">认证失败</td>
+                    <td class="px-4 py-3 text-gray-500">检查 API Key 是否正确</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-info">403</td>
+                    <td class="px-4 py-3 text-gray-700">权限不足</td>
+                    <td class="px-4 py-3 text-gray-500">检查 API Key 权限</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-purple-500">404</td>
+                    <td class="px-4 py-3 text-gray-700">资源不存在</td>
+                    <td class="px-4 py-3 text-gray-500">检查请求地址是否正确</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-red-600">429</td>
+                    <td class="px-4 py-3 text-gray-700">请求过于频繁</td>
+                    <td class="px-4 py-3 text-gray-500">降低请求频率或联系客服</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-orange-600">500</td>
+                    <td class="px-4 py-3 text-gray-700">服务器内部错误</td>
+                    <td class="px-4 py-3 text-gray-500">稍后重试或联系客服</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 初始化认证 -->
+          <section id="api-init" class="bg-white rounded-2xl shadow-sm p-8 mb-8 api-card">
+            <div class="flex items-center gap-3 mb-6">
+              <span class="method-badge method-post">POST</span>
+              <h2 class="text-xl font-bold text-gray-900">初始化认证</h2>
+            </div>
+            <p class="text-gray-600 mb-6">
+              调用此接口初始化一次认证会话，获取认证 Token。Token 有效期为 5 分钟，使用后立即失效。
+            </p>
+            
+            <div class="bg-gray-50 rounded-xl p-5 mb-6">
+              <h3 class="font-semibold text-gray-900 mb-3">接口地址</h3>
+              <code class="text-sm text-primary">POST /api/v1/auth/init</code>
+            </div>
+            
+            <div class="mb-6">
+              <h3 class="font-semibold text-gray-900 mb-3">请求参数</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="bg-gray-50 text-left">
+                      <th class="px-4 py-2 font-semibold text-gray-700 rounded-l-lg">参数名</th>
+                      <th class="px-4 py-2 font-semibold text-gray-700">类型</th>
+                      <th class="px-4 py-2 font-semibold text-gray-700">必填</th>
+                      <th class="px-4 py-2 font-semibold text-gray-700 rounded-r-lg">说明</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    <tr>
+                      <td class="px-4 py-2 font-mono text-primary">api_key</td>
+                      <td class="px-4 py-2 text-gray-600">string</td>
+                      <td class="px-4 py-2"><span class="text-danger">是</span></td>
+                      <td class="px-4 py-2 text-gray-600">API Key</td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-2 font-mono text-primary">user_id</td>
+                      <td class="px-4 py-2 text-gray-600">string</td>
+                      <td class="px-4 py-2"><span class="text-gray-400">否</span></td>
+                      <td class="px-4 py-2 text-gray-600">用户标识，用于关联您的业务系统</td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-2 font-mono text-primary">type</td>
+                      <td class="px-4 py-2 text-gray-600">string</td>
+                      <td class="px-4 py-2"><span class="text-gray-400">否</span></td>
+                      <td class="px-4 py-2 text-gray-600">认证类型：face(人脸比对) / idcard(身份核验)，默认 face</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <h3 class="font-semibold text-gray-900 mb-3">请求示例</h3>
+              <div class="code-block">
+                <span class="keyword">curl</span> -X POST <span class="string">https://your-domain.com/api/v1/auth/init</span> \<br>
+                &nbsp;&nbsp;-H <span class="string">"Content-Type: application/json"</span> \<br>
+                &nbsp;&nbsp;-d <span class="string">'{<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;"api_key": "YOUR_API_KEY",<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;"user_id": "user_123",<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;"type": "face"<br>
+                &nbsp;&nbsp;}'</span>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-3">返回示例</h3>
+              <div class="code-block">
+                {<br>
+                &nbsp;&nbsp;<span class="string">"code"</span>: <span class="number">200</span>,<br>
+                &nbsp;&nbsp;<span class="string">"message"</span>: <span class="string">"初始化成功"</span>,<br>
+                &nbsp;&nbsp;<span class="string">"data"</span>: {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"token"</span>: <span class="string">"a1b2c3d4e5f6.1700000000.signature"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"expires_in"</span>: <span class="number">300</span><br>
+                &nbsp;&nbsp;}<br>
+                }
+              </div>
+            </div>
+          </section>
+
+          <!-- 提交认证 -->
+          <section id="api-verify" class="bg-white rounded-2xl shadow-sm p-8 mb-8 api-card">
+            <div class="flex items-center gap-3 mb-6">
+              <span class="method-badge method-post">POST</span>
+              <h2 class="text-xl font-bold text-gray-900">提交认证</h2>
+            </div>
+            <p class="text-gray-600 mb-6">
+              提交人脸图片进行认证。支持活体检测、人脸比对等多种认证方式。
+            </p>
+            
+            <div class="bg-gray-50 rounded-xl p-5 mb-6">
+              <h3 class="font-semibold text-gray-900 mb-3">接口地址</h3>
+              <code class="text-sm text-primary">POST /api/v1/auth/verify</code>
+            </div>
+            
+            <div class="mb-6">
+              <h3 class="font-semibold text-gray-900 mb-3">请求参数</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="bg-gray-50 text-left">
+                      <th class="px-4 py-2 font-semibold text-gray-700 rounded-l-lg">参数名</th>
+                      <th class="px-4 py-2 font-semibold text-gray-700">类型</th>
+                      <th class="px-4 py-2 font-semibold text-gray-700">必填</th>
+                      <th class="px-4 py-2 font-semibold text-gray-700 rounded-r-lg">说明</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    <tr>
+                      <td class="px-4 py-2 font-mono text-primary">token</td>
+                      <td class="px-4 py-2 text-gray-600">string</td>
+                      <td class="px-4 py-2"><span class="text-danger">是</span></td>
+                      <td class="px-4 py-2 text-gray-600">初始化获取的认证 Token</td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-2 font-mono text-primary">image</td>
+                      <td class="px-4 py-2 text-gray-600">string</td>
+                      <td class="px-4 py-2"><span class="text-danger">是</span></td>
+                      <td class="px-4 py-2 text-gray-600">人脸图片 Base64 编码</td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-2 font-mono text-primary">image2</td>
+                      <td class="px-4 py-2 text-gray-600">string</td>
+                      <td class="px-4 py-2"><span class="text-gray-400">否</span></td>
+                      <td class="px-4 py-2 text-gray-600">第二张人脸图片（用于1:1比对）</td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-2 font-mono text-primary">liveness</td>
+                      <td class="px-4 py-2 text-gray-600">boolean</td>
+                      <td class="px-4 py-2"><span class="text-gray-400">否</span></td>
+                      <td class="px-4 py-2 text-gray-600">是否开启活体检测，默认 true</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-3">返回示例</h3>
+              <div class="code-block">
+                {<br>
+                &nbsp;&nbsp;<span class="string">"code"</span>: <span class="number">200</span>,<br>
+                &nbsp;&nbsp;<span class="string">"message"</span>: <span class="string">"认证成功"</span>,<br>
+                &nbsp;&nbsp;<span class="string">"data"</span>: {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"verify_id"</span>: <span class="string">"SM202403150001"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"status"</span>: <span class="string">"passed"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"score"</span>: <span class="number">95.5</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"liveness_passed"</span>: <span class="keyword">true</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"channel"</span>: <span class="string">"tencent"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"duration"</span>: <span class="number">480</span><br>
+                &nbsp;&nbsp;}<br>
+                }
+              </div>
+            </div>
+          </section>
+
+          <!-- 查询结果 -->
+          <section id="api-result" class="bg-white rounded-2xl shadow-sm p-8 mb-8 api-card">
+            <div class="flex items-center gap-3 mb-6">
+              <span class="method-badge method-get">GET</span>
+              <h2 class="text-xl font-bold text-gray-900">查询认证结果</h2>
+            </div>
+            <p class="text-gray-600 mb-6">
+              根据认证编号查询认证结果详情。
+            </p>
+            
+            <div class="bg-gray-50 rounded-xl p-5 mb-6">
+              <h3 class="font-semibold text-gray-900 mb-3">接口地址</h3>
+              <code class="text-sm text-primary">GET /api/v1/auth/result</code>
+            </div>
+            
+            <div class="mb-6">
+              <h3 class="font-semibold text-gray-900 mb-3">请求参数</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="bg-gray-50 text-left">
+                      <th class="px-4 py-2 font-semibold text-gray-700 rounded-l-lg">参数名</th>
+                      <th class="px-4 py-2 font-semibold text-gray-700">类型</th>
+                      <th class="px-4 py-2 font-semibold text-gray-700">必填</th>
+                      <th class="px-4 py-2 font-semibold text-gray-700 rounded-r-lg">说明</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    <tr>
+                      <td class="px-4 py-2 font-mono text-primary">verify_id</td>
+                      <td class="px-4 py-2 text-gray-600">string</td>
+                      <td class="px-4 py-2"><span class="text-danger">是</span></td>
+                      <td class="px-4 py-2 text-gray-600">认证编号</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-3">返回示例</h3>
+              <div class="code-block">
+                {<br>
+                &nbsp;&nbsp;<span class="string">"code"</span>: <span class="number">200</span>,<br>
+                &nbsp;&nbsp;<span class="string">"message"</span>: <span class="string">"查询成功"</span>,<br>
+                &nbsp;&nbsp;<span class="string">"data"</span>: {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"verify_id"</span>: <span class="string">"SM202403150001"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"status"</span>: <span class="string">"passed"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"score"</span>: <span class="number">95.5</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"channel"</span>: <span class="string">"tencent"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"liveness_passed"</span>: <span class="keyword">true</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"created_at"</span>: <span class="string">"2024-03-15 14:30:28"</span><br>
+                &nbsp;&nbsp;}<br>
+                }
+              </div>
+            </div>
+          </section>
+
+          <!-- PHP SDK -->
+          <section id="sdk-php" class="bg-white rounded-2xl shadow-sm p-8 mb-8 api-card">
+            <div class="flex items-center gap-3 mb-6">
+              <i class="fab fa-php text-2xl text-indigo-500"></i>
+              <h2 class="text-xl font-bold text-gray-900">PHP 示例</h2>
+            </div>
+            
+            <div class="code-block">
+              <span class="comment">&lt;?php</span><br><br>
+              <span class="keyword">class</span> <span class="function">SenmaYunFaceAuth</span> {<br>
+              &nbsp;&nbsp;<span class="keyword">private</span> <span class="variable">$apiKey</span>;<br>
+              &nbsp;&nbsp;<span class="keyword">private</span> <span class="variable">$apiBase</span> = <span class="string">'https://your-domain.com/api/v1'</span>;<br><br>
+              &nbsp;&nbsp;<span class="keyword">public function</span> <span class="function">__construct</span>(<span class="variable">$apiKey</span>) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">$this</span>->apiKey = <span class="variable">$apiKey</span>;<br>
+              &nbsp;&nbsp;}<br><br>
+              &nbsp;&nbsp;<span class="comment">// 初始化认证</span><br>
+              &nbsp;&nbsp;<span class="keyword">public function</span> <span class="function">initAuth</span>(<span class="variable">$userId</span> = <span class="string">''</span>) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">$data</span> = [<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'api_key'</span> => <span class="variable">$this</span>->apiKey,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'user_id'</span> => <span class="variable">$userId</span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;];<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="variable">$this</span>-><span class="function">request</span>(<span class="string">'POST'</span>, <span class="string">'/auth/init'</span>, <span class="variable">$data</span>);<br>
+              &nbsp;&nbsp;}<br><br>
+              &nbsp;&nbsp;<span class="comment">// 提交认证</span><br>
+              &nbsp;&nbsp;<span class="keyword">public function</span> <span class="function">verify</span>(<span class="variable">$token</span>, <span class="variable">$imageBase64</span>) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">$data</span> = [<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'token'</span> => <span class="variable">$token</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'image'</span> => <span class="variable">$imageBase64</span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;];<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="variable">$this</span>-><span class="function">request</span>(<span class="string">'POST'</span>, <span class="string">'/auth/verify'</span>, <span class="variable">$data</span>);<br>
+              &nbsp;&nbsp;}<br><br>
+              &nbsp;&nbsp;<span class="comment">// 查询结果</span><br>
+              &nbsp;&nbsp;<span class="keyword">public function</span> <span class="function">getResult</span>(<span class="variable">$verifyId</span>) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="variable">$this</span>-><span class="function">request</span>(<span class="string">'GET'</span>, <span class="string">'/auth/result?verify_id='</span> . <span class="variable">$verifyId</span>);<br>
+              &nbsp;&nbsp;}<br><br>
+              &nbsp;&nbsp;<span class="comment">// HTTP请求</span><br>
+              &nbsp;&nbsp;<span class="keyword">private function</span> <span class="function">request</span>(<span class="variable">$method</span>, <span class="variable">$path</span>, <span class="variable">$data</span> = []) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">$url</span> = <span class="variable">$this</span>->apiBase . <span class="variable">$path</span>;<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">$ch</span> = <span class="function">curl_init</span>(<span class="variable">$url</span>);<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">curl_setopt</span>(<span class="variable">$ch</span>, CURLOPT_RETURNTRANSFER, <span class="keyword">true</span>);<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (<span class="variable">$method</span> === <span class="string">'POST'</span>) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">curl_setopt</span>(<span class="variable">$ch</span>, CURLOPT_POST, <span class="keyword">true</span>);<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">curl_setopt</span>(<span class="variable">$ch</span>, CURLOPT_POSTFIELDS, <span class="function">json_encode</span>(<span class="variable">$data</span>));<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">$response</span> = <span class="function">curl_exec</span>(<span class="variable">$ch</span>);<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">curl_close</span>(<span class="variable">$ch</span>);<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="function">json_decode</span>(<span class="variable">$response</span>, <span class="keyword">true</span>);<br>
+              &nbsp;&nbsp;}<br>
+              }
+            </div>
+          </section>
+
+          <!-- JavaScript SDK -->
+          <section id="sdk-js" class="bg-white rounded-2xl shadow-sm p-8 mb-8 api-card">
+            <div class="flex items-center gap-3 mb-6">
+              <i class="fab fa-js text-2xl text-yellow-500"></i>
+              <h2 class="text-xl font-bold text-gray-900">JavaScript 示例</h2>
+            </div>
+            
+            <div class="code-block">
+              <span class="keyword">class</span> <span class="function">SenmaYunFaceAuth</span> {<br>
+              &nbsp;&nbsp;<span class="function">constructor</span>(apiKey) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.apiKey = apiKey;<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.apiBase = <span class="string">'https://your-domain.com/api/v1'</span>;<br>
+              &nbsp;&nbsp;}<br><br>
+              &nbsp;&nbsp;<span class="comment">// 初始化认证</span><br>
+              &nbsp;&nbsp;<span class="keyword">async</span> <span class="function">initAuth</span>(userId = <span class="string">''</span>) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span> res = <span class="keyword">await</span> fetch(<span class="template-string">`${this.apiBase}/auth/init`</span>, {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method: <span class="string">'POST'</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body: JSON.stringify({<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;api_key: <span class="keyword">this</span>.apiKey,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user_id: userId<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;})<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;});<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> res.json();<br>
+              &nbsp;&nbsp;}<br><br>
+              &nbsp;&nbsp;<span class="comment">// 提交认证</span><br>
+              &nbsp;&nbsp;<span class="keyword">async</span> <span class="function">verify</span>(token, imageBase64) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span> res = <span class="keyword">await</span> fetch(<span class="template-string">`${this.apiBase}/auth/verify`</span>, {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method: <span class="string">'POST'</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body: JSON.stringify({ token, image: imageBase64 })<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;});<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> res.json();<br>
+              &nbsp;&nbsp;}<br><br>
+              &nbsp;&nbsp;<span class="comment">// 查询结果</span><br>
+              &nbsp;&nbsp;<span class="keyword">async</span> <span class="function">getResult</span>(verifyId) {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const</span> res = <span class="keyword">await</span> fetch(<span class="template-string">`${this.apiBase}/auth/result?verify_id=${verifyId}`</span>);<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> res.json();<br>
+              &nbsp;&nbsp;}<br>
+              }
+            </div>
+          </section>
+
+          <!-- Python SDK -->
+          <section id="sdk-python" class="bg-white rounded-2xl shadow-sm p-8 mb-8 api-card">
+            <div class="flex items-center gap-3 mb-6">
+              <i class="fab fa-python text-2xl text-blue-500"></i>
+              <h2 class="text-xl font-bold text-gray-900">Python 示例</h2>
+            </div>
+            
+            <div class="code-block">
+              <span class="keyword">import</span> requests<br>
+              <span class="keyword">import</span> json<br><br>
+              <span class="keyword">class</span> <span class="function">SenmaYunFaceAuth</span>:<br>
+              &nbsp;&nbsp;<span class="keyword">def</span> <span class="function">__init__</span>(self, api_key):<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;self.api_key = api_key<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;self.api_base = <span class="string">'https://your-domain.com/api/v1'</span><br><br>
+              &nbsp;&nbsp;<span class="comment"># 初始化认证</span><br>
+              &nbsp;&nbsp;<span class="keyword">def</span> <span class="function">init_auth</span>(self, user_id=<span class="string">''</span>):<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;data = {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'api_key'</span>: self.api_key,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'user_id'</span>: user_id<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;res = requests.post(f<span class="string">"{self.api_base}/auth/init"</span>, json=data)<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> res.json()<br><br>
+              &nbsp;&nbsp;<span class="comment"># 提交认证</span><br>
+              &nbsp;&nbsp;<span class="keyword">def</span> <span class="function">verify</span>(self, token, image_base64):<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;data = {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'token'</span>: token,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'image'</span>: image_base64<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;res = requests.post(f<span class="string">"{self.api_base}/auth/verify"</span>, json=data)<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> res.json()<br><br>
+              &nbsp;&nbsp;<span class="comment"># 查询结果</span><br>
+              &nbsp;&nbsp;<span class="keyword">def</span> <span class="function">get_result</span>(self, verify_id):<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;res = requests.get(f<span class="string">"{self.api_base}/auth/result?verify_id={verify_id}"</span>)<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> res.json()
+            </div>
+          </section>
+
+          <!-- 底部 -->
+          <div class="text-center text-gray-400 text-sm py-8">
+            <p>森码云实人认证系统 · API文档 v1.0.0</p>
+            <p class="mt-2">如有问题请联系技术支持</p>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 侧边栏滚动高亮
+    document.addEventListener('DOMContentLoaded', function() {
+      const sections = document.querySelectorAll('section[id]');
+      const links = document.querySelectorAll('.sidebar-link');
+      
+      window.addEventListener('scroll', function() {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          if (window.scrollY >= sectionTop - 100) {
+            current = section.getAttribute('id');
+          }
+        });
+        
+        links.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+          }
+        });
+      });
+      
+      // 平滑滚动
+      links.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href').substring(1);
+          const target = document.getElementById(targetId);
+          if (target) {
+            window.scrollTo({
+              top: target.offsetTop - 80,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
