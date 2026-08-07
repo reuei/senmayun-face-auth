@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>森码云实人认证</title>
-  <meta name="description" content="安全、可靠、易用的实人认证服务">
+  <title>森码云实人认证 - 安全、可靠、易用的实人认证服务</title>
+  <meta name="description" content="森码云实人认证系统，支持活体检测、人脸比对、多通道冗余，可对接魔方财务系统。">
   
   <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,75 +18,36 @@
             success: '#10b981',
             danger: '#ef4444',
             warning: '#f59e0b',
+            info: '#3b82f6',
             dark: '#1f2937'
           },
           fontFamily: {
             sans: ['Inter', 'Noto Sans SC', 'system-ui', 'sans-serif']
-          },
-          animation: {
-            'float': 'float 6s ease-in-out infinite',
-            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'bounce-slow': 'bounce 2s infinite',
-            'spin-slow': 'spin 3s linear infinite',
-            'fade-in': 'fadeIn 0.5s ease-out',
-            'slide-up': 'slideUp 0.5s ease-out',
-            'scale-in': 'scaleIn 0.3s ease-out'
-          },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-20px)' }
-            },
-            fadeIn: {
-              '0%': { opacity: '0' },
-              '100%': { opacity: '1' }
-            },
-            slideUp: {
-              '0%': { opacity: '0', transform: 'translateY(20px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' }
-            },
-            scaleIn: {
-              '0%': { opacity: '0', transform: 'scale(0.9)' },
-              '100%': { opacity: '1', transform: 'scale(1)' }
-            }
           }
         }
       }
     }
   </script>
   
-  <!-- Element Plus CSS -->
+  <!-- Element Plus -->
   <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
   
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- AOS 动画库 -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   
-  <!-- ECharts -->
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif; overflow-x: hidden; }
     
     /* 渐变背景 */
-    .gradient-bg {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .gradient-bg-soft { background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); }
     .gradient-text {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       -webkit-background-clip: text;
@@ -94,1553 +55,1024 @@
       background-clip: text;
     }
     
-    /* 玻璃态效果 */
-    .glass {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+    /* 按钮 */
+    .btn-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-gradient::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .btn-gradient:hover::before { left: 100%; }
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
     }
     
     /* 卡片悬停效果 */
     .card-hover {
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .card-hover:hover {
-      transform: translateY(-5px);
+      transform: translateY(-8px);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     }
     
-    /* 按钮渐变 */
-    .btn-gradient {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      transition: all 0.3s ease;
+    /* 浮动动画 */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
     }
-    .btn-gradient:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-float-delay { animation: float 6s ease-in-out infinite; animation-delay: 2s; }
+    .animate-float-delay2 { animation: float 6s ease-in-out infinite; animation-delay: 4s; }
+    
+    /* 脉冲动画 */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+    .pulse-ring {
+      animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
     
-    /* 滚动条样式 */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+    /* 扫描线动画 */
+    @keyframes scan-line {
+      0% { top: 0%; }
+      100% { top: 100%; }
     }
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 4px;
+    .scan-line {
+      animation: scan-line 2s linear infinite;
     }
     
-    /* 加载动画 */
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #e5e7eb;
-      border-top-color: #667eea;
+    /* 发光效果 */
+    .glow {
+      box-shadow: 0 0 60px rgba(102, 126, 234, 0.3);
+    }
+    
+    /* 页面加载动画 */
+    .page-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .page-loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .loader-content {
+      text-align: center;
+      color: white;
+    }
+    
+    .loader-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      position: relative;
+    }
+    
+    .loader-icon .circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 3px solid transparent;
+      border-top-color: white;
       border-radius: 50%;
       animation: spin 1s linear infinite;
+    }
+    
+    .loader-icon .circle:nth-child(2) {
+      width: 60px;
+      height: 60px;
+      top: 10px;
+      left: 10px;
+      border-top-color: rgba(255,255,255,0.6);
+      animation-duration: 1.5s;
+      animation-direction: reverse;
+    }
+    
+    .loader-icon .circle:nth-child(3) {
+      width: 40px;
+      height: 40px;
+      top: 20px;
+      left: 20px;
+      border-top-color: rgba(255,255,255,0.3);
+      animation-duration: 2s;
+    }
+    
+    .loader-icon .fingerprint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
     }
     
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     
-    /* 扫描线效果 */
-    .scan-line {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #667eea, transparent);
-      animation: scan 2s linear infinite;
+    .loader-text {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 8px;
     }
     
-    @keyframes scan {
-      0% { top: 0; }
-      100% { top: 100%; }
+    .loader-subtext {
+      font-size: 14px;
+      opacity: 0.7;
     }
     
-    /* 脉冲环 */
-    .pulse-ring {
+    /* 进度条 */
+    .loader-progress {
+      width: 200px;
+      height: 3px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      margin: 20px auto 0;
+      overflow: hidden;
+    }
+    
+    .loader-progress-bar {
+      height: 100%;
+      background: white;
+      border-radius: 2px;
+      animation: progress 2s ease-in-out infinite;
+    }
+    
+    @keyframes progress {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+    
+    /* 背景装饰 */
+    .bg-blob {
       position: absolute;
-      border: 2px solid #667eea;
       border-radius: 50%;
-      animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      filter: blur(80px);
+      opacity: 0.4;
+      z-index: 0;
     }
     
-    @keyframes pulse-ring {
-      0% {
-        transform: scale(0.8);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1.5);
-        opacity: 0;
-      }
+    /* 导航栏毛玻璃 */
+    .nav-blur {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.8);
     }
     
-    /* 页面切换动画 */
-    .page-enter-active,
-    .page-leave-active {
+    /* 特性图标 */
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
       transition: all 0.3s ease;
     }
-    .page-enter-from {
-      opacity: 0;
-      transform: translateX(20px);
-    }
-    .page-leave-to {
-      opacity: 0;
-      transform: translateX(-20px);
+    .feature-card:hover .feature-icon {
+      transform: scale(1.1) rotate(5deg);
     }
     
-    /* Element Plus 主题定制 */
-    .el-button--primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border: none;
+    /* 步骤连接线 */
+    .step-line {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, #e5e7eb, #e5e7eb);
+      z-index: 0;
     }
-    .el-button--primary:hover {
-      opacity: 0.9;
+    
+    /* 价格卡片 */
+    .pricing-popular {
+      position: relative;
+      border: 2px solid #667eea;
+    }
+    .pricing-popular::before {
+      content: '最受欢迎';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    /* FAQ 折叠动画 */
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .faq-item.active .faq-content {
+      max-height: 500px;
+    }
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+    .faq-icon {
+      transition: transform 0.3s ease;
+    }
+    
+    /* 滚动条美化 */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 4px; 
+    }
+    
+    /* 移动端菜单 */
+    .mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .mobile-menu.open {
+      transform: translateX(0);
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <!-- 加载中 -->
-    <div v-if="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
-      <div class="text-center">
-        <div class="loading-spinner mx-auto mb-4"></div>
-        <p class="text-gray-500">加载中...</p>
+  <!-- 页面加载动画 -->
+  <div id="pageLoader" class="page-loader">
+    <div class="loader-content">
+      <div class="loader-icon">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <i class="fas fa-fingerprint fingerprint"></i>
+      </div>
+      <div class="loader-text">森码云实人认证</div>
+      <div class="loader-subtext">正在加载...</div>
+      <div class="loader-progress">
+        <div class="loader-progress-bar"></div>
       </div>
     </div>
   </div>
 
+  <div id="app">
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <div class="flex items-center gap-3 cursor-pointer" @click="goHome">
+            <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+              <i class="fas fa-fingerprint text-white text-lg"></i>
+            </div>
+            <div>
+              <div class="font-bold text-gray-900 text-lg">森码云</div>
+              <div class="text-xs text-gray-500 -mt-1">实人认证</div>
+            </div>
+          </div>
+          
+          <!-- 桌面端导航 -->
+          <div class="hidden md:flex items-center gap-8">
+            <a href="#home" class="text-gray-600 hover:text-primary transition font-medium">首页</a>
+            <a href="#features" class="text-gray-600 hover:text-primary transition font-medium">功能特性</a>
+            <a href="#pricing" class="text-gray-600 hover:text-primary transition font-medium">价格方案</a>
+            <a href="#faq" class="text-gray-600 hover:text-primary transition font-medium">常见问题</a>
+            <a href="/docs.html" class="text-gray-600 hover:text-primary transition font-medium">API文档</a>
+          </div>
+          
+          <!-- 按钮 -->
+          <div class="hidden md:flex items-center gap-4">
+            <a href="/admin.html" class="text-gray-600 hover:text-primary transition font-medium">
+              <i class="fas fa-sign-in-alt mr-1"></i>管理后台
+            </a>
+            <a href="#verify" class="btn-gradient text-white px-6 py-2.5 rounded-full font-medium text-sm">
+              立即认证
+            </a>
+          </div>
+          
+          <!-- 移动端菜单按钮 -->
+          <button class="md:hidden text-gray-600 text-xl" @click="mobileMenuOpen = !mobileMenuOpen">
+            <i :class="mobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- 移动端菜单 -->
+      <div class="mobile-menu md:hidden fixed top-16 right-0 bottom-0 w-64 bg-white shadow-xl p-6"
+           :class="{ 'open': mobileMenuOpen }">
+        <div class="space-y-4">
+          <a href="#home" class="block text-gray-600 hover:text-primary py-2 font-medium" @click="mobileMenuOpen = false">首页</a>
+          <a href="#features" class="block text-gray-600 hover:text-primary py-2 font-medium" @click="mobileMenuOpen = false">功能特性</a>
+          <a href="#pricing" class="block text-gray-600 hover:text-primary py-2 font-medium" @click="mobileMenuOpen = false">价格方案</a>
+          <a href="#faq" class="block text-gray-600 hover:text-primary py-2 font-medium" @click="mobileMenuOpen = false">常见问题</a>
+          <a href="/docs.html" class="block text-gray-600 hover:text-primary py-2 font-medium">API文档</a>
+          <hr class="my-4">
+          <a href="/admin.html" class="block text-gray-600 hover:text-primary py-2 font-medium">
+            <i class="fas fa-sign-in-alt mr-2"></i>管理后台
+          </a>
+          <a href="#verify" class="btn-gradient text-white px-6 py-2.5 rounded-full font-medium text-center block mt-4"
+             @click="mobileMenuOpen = false">
+            立即认证
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section id="home" class="relative pt-32 pb-20 overflow-hidden">
+      <!-- 背景装饰 -->
+      <div class="bg-blob w-96 h-96 bg-primary -top-20 -left-20"></div>
+      <div class="bg-blob w-96 h-96 bg-secondary top-40 -right-20"></div>
+      <div class="bg-blob w-64 h-64 bg-purple-300 bottom-0 left-1/3"></div>
+      
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <!-- 左侧文字 -->
+          <div data-aos="fade-right" data-aos-duration="1000">
+            <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-sm mb-6">
+              <span class="w-2 h-2 bg-success rounded-full animate-pulse"></span>
+              <span class="text-sm text-gray-600">多通道冗余 · 99.99% 可用性</span>
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+              安全可靠的<br>
+              <span class="gradient-text">实人认证</span>服务
+            </h1>
+            
+            <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+              基于深度学习的人脸识别技术，支持活体检测、人脸比对、身份核验。
+              多通道冗余架构，确保高可用性。快速接入，10分钟完成集成。
+            </p>
+            
+            <div class="flex flex-wrap gap-4 mb-10">
+              <a href="#verify" class="btn-gradient text-white px-8 py-3.5 rounded-full font-medium inline-flex items-center gap-2">
+                <i class="fas fa-play"></i>
+                立即体验
+              </a>
+              <a href="#features" class="border-2 border-gray-200 text-gray-700 px-8 py-3.5 rounded-full font-medium hover:border-primary hover:text-primary transition inline-flex items-center gap-2">
+                <i class="fas fa-info-circle"></i>
+                了解更多
+              </a>
+            </div>
+            
+            <!-- 数据统计 -->
+            <div class="grid grid-cols-3 gap-6">
+              <div>
+                <div class="text-3xl font-bold gradient-text">99.9%</div>
+                <div class="text-sm text-gray-500 mt-1">认证准确率</div>
+              </div>
+              <div>
+                <div class="text-3xl font-bold gradient-text">500ms</div>
+                <div class="text-sm text-gray-500 mt-1">平均响应</div>
+              </div>
+              <div>
+                <div class="text-3xl font-bold gradient-text">5+</div>
+                <div class="text-sm text-gray-500 mt-1">认证通道</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 右侧演示图 -->
+          <div class="relative" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+            <!-- 主卡片 -->
+            <div class="relative bg-white rounded-3xl shadow-2xl p-8 glow animate-float">
+              <!-- 扫描动画 -->
+              <div class="relative w-full aspect-square max-w-sm mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 mb-6">
+                <!-- 人脸轮廓 -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="w-48 h-56 border-4 border-dashed border-primary/30 rounded-full relative">
+                    <!-- 扫描线 -->
+                    <div class="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent scan-line shadow-lg"></div>
+                    <!-- 人脸图标 -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <i class="fas fa-user text-6xl text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 四角标记 -->
+                <div class="absolute top-4 left-4 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-lg"></div>
+                <div class="absolute top-4 right-4 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-lg"></div>
+                <div class="absolute bottom-4 left-4 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-lg"></div>
+                <div class="absolute bottom-4 right-4 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-lg"></div>
+                
+                <!-- 状态标签 -->
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-success/90 backdrop-blur text-white px-4 py-1.5 rounded-full text-sm font-medium flex items-center gap-2">
+                  <i class="fas fa-check-circle"></i>
+                  活体检测中
+                </div>
+              </div>
+              
+              <!-- 状态信息 -->
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-500">认证状态</span>
+                  <span class="text-success font-medium flex items-center gap-1">
+                    <i class="fas fa-spinner fa-spin text-sm"></i>
+                    认证中...
+                  </span>
+                </div>
+                <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-full gradient-bg rounded-full" style="width: 65%; animation: progress 2s ease-in-out infinite;"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <div class="text-gray-400 text-xs mb-1">活体检测</div>
+                    <div class="text-success font-medium"><i class="fas fa-check mr-1"></i>已通过</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <div class="text-gray-400 text-xs mb-1">人脸比对</div>
+                    <div class="text-primary font-medium"><i class="fas fa-spinner fa-spin mr-1"></i>进行中</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 浮动卡片1 -->
+            <div class="absolute -top-4 -left-4 bg-white rounded-2xl shadow-xl p-4 animate-float-delay" data-aos="zoom-in" data-aos-delay="500">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                  <i class="fas fa-shield-alt text-xl text-success"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-900">安全加密</div>
+                  <div class="text-xs text-gray-500">AES-256</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 浮动卡片2 -->
+            <div class="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-xl p-4 animate-float-delay2" data-aos="zoom-in" data-aos-delay="700">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                  <i class="fas fa-bolt text-xl text-info"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-900">极速响应</div>
+                  <div class="text-xs text-gray-500">500ms</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 合作伙伴 -->
+    <section class="py-12 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-center text-gray-400 text-sm mb-8">支持多家主流云服务商</p>
+        <div class="flex flex-wrap justify-center items-center gap-12 opacity-50">
+          <div class="text-2xl font-bold text-gray-400"><i class="fab fa-google mr-2"></i>Google Cloud</div>
+          <div class="text-2xl font-bold text-gray-400"><i class="fab fa-aws mr-2"></i>AWS</div>
+          <div class="text-2xl font-bold text-gray-400"><i class="fab fa-microsoft mr-2"></i>Azure</div>
+          <div class="text-2xl font-bold text-gray-400"><i class="fas fa-cloud mr-2"></i>腾讯云</div>
+          <div class="text-2xl font-bold text-gray-400"><i class="fas fa-cloud mr-2"></i>阿里云</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 功能特性 -->
+    <section id="features" class="py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+          <div class="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+            功能特性
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            强大的<span class="gradient-text">核心功能</span>
+          </h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            提供全方位的实人认证解决方案，满足各种业务场景需求
+          </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- 特性1 -->
+          <div class="feature-card card-hover bg-white rounded-2xl p-8 shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-icon bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 mb-6">
+              <i class="fas fa-fingerprint"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">活体检测</h3>
+            <p class="text-gray-600 leading-relaxed mb-4">
+              支持动作活体、炫彩活体、近红外活体等多种检测方式，有效抵御照片、视频、面具等攻击。
+            </p>
+            <a href="#" class="text-primary font-medium text-sm inline-flex items-center gap-1 hover:gap-2 transition-all">
+              了解更多 <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+          
+          <!-- 特性2 -->
+          <div class="feature-card card-hover bg-white rounded-2xl p-8 shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-icon bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 mb-6">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">人脸比对</h3>
+            <p class="text-gray-600 leading-relaxed mb-4">
+              1:1人脸比对，支持身份证照片、证件照、自拍照等多种来源，准确率高达99.9%。
+            </p>
+            <a href="#" class="text-primary font-medium text-sm inline-flex items-center gap-1 hover:gap-2 transition-all">
+              了解更多 <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+          
+          <!-- 特性3 -->
+          <div class="feature-card card-hover bg-white rounded-2xl p-8 shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-icon bg-gradient-to-br from-green-100 to-green-200 text-green-600 mb-6">
+              <i class="fas fa-server"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">多通道冗余</h3>
+            <p class="text-gray-600 leading-relaxed mb-4">
+              接入腾讯云、百度AI、Azure、Face++等多家服务商，自动降级切换，确保99.99%可用性。
+            </p>
+            <a href="#" class="text-primary font-medium text-sm inline-flex items-center gap-1 hover:gap-2 transition-all">
+              了解更多 <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+          
+          <!-- 特性4 -->
+          <div class="feature-card card-hover bg-white rounded-2xl p-8 shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="400">
+            <div class="feature-icon bg-gradient-to-br from-yellow-100 to-yellow-200 text-yellow-600 mb-6">
+              <i class="fas fa-id-card"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">身份核验</h3>
+            <p class="text-gray-600 leading-relaxed mb-4">
+              对接公安权威数据源，支持身份证二要素、三要素核验，确保身份真实有效。
+            </p>
+            <a href="#" class="text-primary font-medium text-sm inline-flex items-center gap-1 hover:gap-2 transition-all">
+              了解更多 <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+          
+          <!-- 特性5 -->
+          <div class="feature-card card-hover bg-white rounded-2xl p-8 shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="500">
+            <div class="feature-icon bg-gradient-to-br from-pink-100 to-pink-200 text-pink-600 mb-6">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">数据安全</h3>
+            <p class="text-gray-600 leading-relaxed mb-4">
+              全链路加密传输，敏感数据加密存储，符合等保2.0要求，通过ISO27001认证。
+            </p>
+            <a href="#" class="text-primary font-medium text-sm inline-flex items-center gap-1 hover:gap-2 transition-all">
+              了解更多 <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+          
+          <!-- 特性6 -->
+          <div class="feature-card card-hover bg-white rounded-2xl p-8 shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="600">
+            <div class="feature-icon bg-gradient-to-br from-indigo-100 to-indigo-200 text-indigo-600 mb-6">
+              <i class="fas fa-plug"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">快速接入</h3>
+            <p class="text-gray-600 leading-relaxed mb-4">
+              提供RESTful API和多语言SDK，完善的文档和示例代码，10分钟完成集成。
+            </p>
+            <a href="/docs.html" class="text-primary font-medium text-sm inline-flex items-center gap-1 hover:gap-2 transition-all">
+              查看文档 <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 认证流程 -->
+    <section class="py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+          <div class="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+            使用流程
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            三步完成<span class="gradient-text">实人认证</span>
+          </h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            简单便捷的认证流程，用户无需注册，一键完成认证
+          </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 relative">
+          <!-- 步骤1 -->
+          <div class="relative text-center" data-aos="fade-up" data-aos-delay="100">
+            <div class="bg-white rounded-2xl p-8 shadow-sm card-hover">
+              <div class="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-bg flex items-center justify-center text-white text-2xl font-bold shadow-lg relative">
+                1
+                <div class="absolute inset-0 rounded-2xl gradient-bg pulse-ring opacity-30"></div>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3">准备阶段</h3>
+              <p class="text-gray-600">
+                打开认证页面，调整摄像头位置，确保面部清晰可见，准备好身份证。
+              </p>
+            </div>
+          </div>
+          
+          <!-- 步骤2 -->
+          <div class="relative text-center" data-aos="fade-up" data-aos-delay="300">
+            <div class="bg-white rounded-2xl p-8 shadow-sm card-hover">
+              <div class="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-bg flex items-center justify-center text-white text-2xl font-bold shadow-lg relative">
+                2
+                <div class="absolute inset-0 rounded-2xl gradient-bg pulse-ring opacity-30"></div>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3">采集核验</h3>
+              <p class="text-gray-600">
+                按照提示完成活体检测动作，系统自动采集人脸图像并进行身份核验。
+              </p>
+            </div>
+          </div>
+          
+          <!-- 步骤3 -->
+          <div class="relative text-center" data-aos="fade-up" data-aos-delay="500">
+            <div class="bg-white rounded-2xl p-8 shadow-sm card-hover">
+              <div class="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-bg flex items-center justify-center text-white text-2xl font-bold shadow-lg relative">
+                3
+                <div class="absolute inset-0 rounded-2xl gradient-bg pulse-ring opacity-30"></div>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3">获取结果</h3>
+              <p class="text-gray-600">
+                实时返回认证结果，支持查询历史记录，可对接业务系统自动开通服务。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 价格方案 -->
+    <section id="pricing" class="py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+          <div class="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+            价格方案
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            选择适合您的<span class="gradient-text">方案</span>
+          </h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            灵活的定价策略，满足不同规模企业的需求
+          </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 items-start">
+          <!-- 基础版 -->
+          <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover" data-aos="fade-up" data-aos-delay="100">
+            <div class="mb-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">基础版</h3>
+              <p class="text-gray-500 text-sm">适合个人开发者和小型项目</p>
+            </div>
+            <div class="mb-6">
+              <span class="text-4xl font-bold text-gray-900">¥0.3</span>
+              <span class="text-gray-500">/次</span>
+            </div>
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>人脸比对</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>活体检测</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>基础技术支持</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-400">
+                <i class="fas fa-times"></i>
+                <span>身份核验</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-400">
+                <i class="fas fa-times"></i>
+                <span>专属通道</span>
+              </li>
+            </ul>
+            <button class="w-full border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:border-primary hover:text-primary transition">
+              开始使用
+            </button>
+          </div>
+          
+          <!-- 专业版 -->
+          <div class="pricing-popular bg-white rounded-2xl p-8 shadow-xl card-hover transform md:-translate-y-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="mb-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">专业版</h3>
+              <p class="text-gray-500 text-sm">适合中小企业和成长型项目</p>
+            </div>
+            <div class="mb-6">
+              <span class="text-4xl font-bold gradient-text">¥0.2</span>
+              <span class="text-gray-500">/次</span>
+              <span class="ml-2 text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">月付更划算</span>
+            </div>
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>人脸比对</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>活体检测</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>身份核验</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>多通道冗余</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>优先技术支持</span>
+              </li>
+            </ul>
+            <button class="w-full btn-gradient text-white py-3 rounded-xl font-medium">
+              立即开通
+            </button>
+          </div>
+          
+          <!-- 企业版 -->
+          <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover" data-aos="fade-up" data-aos-delay="500">
+            <div class="mb-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">企业版</h3>
+              <p class="text-gray-500 text-sm">适合大型企业和高并发场景</p>
+            </div>
+            <div class="mb-6">
+              <span class="text-4xl font-bold text-gray-900">定制</span>
+            </div>
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>全部功能</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>专属部署</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>定制化开发</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>SLA保障</span>
+              </li>
+              <li class="flex items-center gap-3 text-gray-600">
+                <i class="fas fa-check text-success"></i>
+                <span>7x24专属支持</span>
+              </li>
+            </ul>
+            <button class="w-full border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:border-primary hover:text-primary transition">
+              联系销售
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-20 bg-gray-50">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+          <div class="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+            常见问题
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            您可能想知道的
+          </h2>
+          <p class="text-gray-600">
+            如有其他问题，欢迎联系我们的技术支持
+          </p>
+        </div>
+        
+        <div class="space-y-4">
+          <div v-for="(faq, index) in faqs" :key="index" 
+               class="faq-item bg-white rounded-xl shadow-sm overflow-hidden"
+               :class="{ 'active': activeFaq === index }"
+               data-aos="fade-up"
+               :data-aos-delay="index * 100">
+            <button class="w-full px-6 py-5 flex items-center justify-between text-left"
+                    @click="activeFaq = activeFaq === index ? -1 : index">
+              <span class="font-semibold text-gray-900">{{ faq.question }}</span>
+              <i class="fas fa-chevron-down faq-icon text-gray-400"></i>
+            </button>
+            <div class="faq-content">
+              <div class="px-6 pb-5 text-gray-600 leading-relaxed">
+                {{ faq.answer }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-20">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="gradient-bg rounded-3xl p-12 text-center text-white relative overflow-hidden" data-aos="zoom-in">
+          <!-- 背景装饰 -->
+          <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+          
+          <div class="relative z-10">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">
+              准备好开始了吗？
+            </h2>
+            <p class="text-white/80 mb-8 max-w-xl mx-auto">
+              立即体验森码云实人认证服务，让您的业务更安全、更高效
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+              <a href="#verify" class="bg-white text-primary px-8 py-3.5 rounded-full font-medium hover:shadow-xl transition inline-flex items-center gap-2">
+                <i class="fas fa-play"></i>
+                立即体验
+              </a>
+              <a href="/docs.html" class="border-2 border-white/30 text-white px-8 py-3.5 rounded-full font-medium hover:bg-white/10 transition inline-flex items-center gap-2">
+                <i class="fas fa-book"></i>
+                查看文档
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-gray-400 py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
+                <i class="fas fa-fingerprint text-white"></i>
+              </div>
+              <div>
+                <div class="font-bold text-white">森码云</div>
+                <div class="text-xs">实人认证</div>
+              </div>
+            </div>
+            <p class="text-sm leading-relaxed">
+              安全、可靠、易用的实人认证服务，助力企业数字化转型。
+            </p>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-white mb-4">产品</h4>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="hover:text-white transition">人脸比对</a></li>
+              <li><a href="#" class="hover:text-white transition">活体检测</a></li>
+              <li><a href="#" class="hover:text-white transition">身份核验</a></li>
+              <li><a href="#" class="hover:text-white transition">API文档</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-white mb-4">资源</h4>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="hover:text-white transition">开发文档</a></li>
+              <li><a href="#" class="hover:text-white transition">SDK下载</a></li>
+              <li><a href="#" class="hover:text-white transition">常见问题</a></li>
+              <li><a href="#" class="hover:text-white transition">更新日志</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-white mb-4">联系我们</h4>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-center gap-2">
+                <i class="fas fa-envelope w-4"></i>
+                support@builds.codes
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fas fa-globe w-4"></i>
+                face.builds.codes
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fab fa-github w-4"></i>
+                GitHub
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p class="text-sm">© 2024 森码云. All rights reserved.</p>
+          <div class="flex gap-6 text-sm">
+            <a href="#" class="hover:text-white transition">隐私政策</a>
+            <a href="#" class="hover:text-white transition">服务条款</a>
+            <a href="#" class="hover:text-white transition">安全说明</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
   <!-- Vue 3 -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  
   <!-- Element Plus -->
   <script src="https://unpkg.com/element-plus"></script>
   <script src="https://unpkg.com/element-plus/dist/locale/zh-cn.js"></script>
-  
-  <!-- Vue Router -->
-  <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.prod.js"></script>
-  
-  <!-- Pinia -->
-  <script src="https://unpkg.com/pinia@2/dist/pinia.iife.prod.js"></script>
-  
-  <!-- Axios -->
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  
-  <!-- face-api.js -->
-  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <!-- AOS 动画库 -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
   <script>
-    const { createApp, ref, reactive, computed, onMounted, watch, nextTick } = Vue;
-    const { createRouter, createWebHistory, useRoute, useRouter } = VueRouter;
-    const { createPinia, defineStore } = Pinia;
+    const { createApp, ref, onMounted } = Vue;
 
-    // API 基础配置
-    const API_BASE = '/api/v1';
-    
-    // Axios 实例
-    const api = axios.create({
-      baseURL: API_BASE,
-      timeout: 30000
-    });
-    
-    // 请求拦截器
-    api.interceptors.request.use(config => {
-      const token = localStorage.getItem('admin_token');
-      if (token) {
-        config.headers['Authorization'] = 'Bearer ' + token;
-      }
-      return config;
-    });
-    
-    // 响应拦截器
-    api.interceptors.response.use(
-      response => response.data,
-      error => {
-        if (error.response?.status === 401) {
-          localStorage.removeItem('admin_token');
-          window.location.href = '/admin/login';
-        }
-        return Promise.reject(error);
-      }
-    );
-
-    // ============================================
-    // 页面组件
-    // ============================================
-
-    // 首页
-    const HomeView = {
-      template: `
-        <div class="min-h-screen bg-gray-50">
-          <!-- 导航栏 -->
-          <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-2">
-                  <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
-                    <i class="fas fa-fingerprint text-white text-lg"></i>
-                  </div>
-                  <span class="text-xl font-bold gradient-text">森码云</span>
-                </div>
-                <div class="hidden md:flex items-center gap-8">
-                  <a href="#features" class="text-gray-600 hover:text-primary transition">功能特性</a>
-                  <a href="#process" class="text-gray-600 hover:text-primary transition">认证流程</a>
-                  <a href="#pricing" class="text-gray-600 hover:text-primary transition">价格方案</a>
-                  <a href="#faq" class="text-gray-600 hover:text-primary transition">常见问题</a>
-                  <a href="/docs" class="text-gray-600 hover:text-primary transition">API文档</a>
-                </div>
-                <div class="flex items-center gap-3">
-                  <button @click="goToAdmin" class="text-gray-600 hover:text-primary text-sm transition">
-                    <i class="fas fa-cog mr-1"></i>管理后台
-                  </button>
-                  <button @click="startVerify" class="btn-gradient text-white px-5 py-2 rounded-full text-sm font-medium">
-                    立即体验
-                  </button>
-                </div>
-              </div>
-            </div>
-          </nav>
-
-          <!-- Hero区域 -->
-          <section class="pt-32 pb-20 px-4 relative overflow-hidden">
-            <div class="absolute inset-0 gradient-bg opacity-5"></div>
-            <div class="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-            <div class="absolute bottom-10 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float" style="animation-delay: -3s;"></div>
-            
-            <div class="max-w-7xl mx-auto relative">
-              <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div class="animate-slide-up">
-                  <div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm mb-6">
-                    <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                    全新升级 · 多通道冗余架构
-                  </div>
-                  <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                    安全可靠的<br>
-                    <span class="gradient-text">实人认证服务</span>
-                  </h1>
-                  <p class="text-lg text-gray-600 mb-8 leading-relaxed">
-                    基于深度学习的人脸识别技术，支持活体检测、人脸比对、身份核验等多种场景。
-                    多通道冗余架构，保障99.99%可用性。
-                  </p>
-                  <div class="flex flex-wrap gap-4">
-                    <button @click="startVerify" class="btn-gradient text-white px-8 py-3 rounded-full font-medium">
-                      <i class="fas fa-play mr-2"></i>免费试用
-                    </button>
-                    <button class="border border-gray-300 text-gray-700 px-8 py-3 rounded-full font-medium hover:border-primary hover:text-primary transition">
-                      <i class="fas fa-book mr-2"></i>查看文档
-                    </button>
-                  </div>
-                  <div class="flex items-center gap-8 mt-10">
-                    <div>
-                      <div class="text-3xl font-bold text-gray-900">99.99%</div>
-                      <div class="text-sm text-gray-500">服务可用性</div>
-                    </div>
-                    <div class="w-px h-12 bg-gray-200"></div>
-                    <div>
-                      <div class="text-3xl font-bold text-gray-900">500ms</div>
-                      <div class="text-sm text-gray-500">平均响应</div>
-                    </div>
-                    <div class="w-px h-12 bg-gray-200"></div>
-                    <div>
-                      <div class="text-3xl font-bold text-gray-900">5+</div>
-                      <div class="text-sm text-gray-500">认证通道</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="relative animate-float">
-                  <div class="relative bg-white rounded-3xl shadow-2xl p-8 card-hover">
-                    <div class="absolute -top-4 -right-4 bg-success text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
-                      <i class="fas fa-check mr-1"></i>实时核验
-                    </div>
-                    <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center relative overflow-hidden mb-6">
-                      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
-                      <div class="scan-line"></div>
-                      <div class="relative text-center">
-                        <div class="w-32 h-32 mx-auto mb-4 rounded-full border-4 border-primary/30 flex items-center justify-center relative">
-                          <div class="pulse-ring inset-0"></div>
-                          <i class="fas fa-user text-6xl text-primary/50"></i>
-                        </div>
-                        <p class="text-gray-500">人脸检测中...</p>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-4 text-center">
-                      <div class="bg-gray-50 rounded-xl p-3">
-                        <div class="text-lg font-bold text-primary">98.5%</div>
-                        <div class="text-xs text-gray-500">相似度</div>
-                      </div>
-                      <div class="bg-gray-50 rounded-xl p-3">
-                        <div class="text-lg font-bold text-success">通过</div>
-                        <div class="text-xs text-gray-500">活体检测</div>
-                      </div>
-                      <div class="bg-gray-50 rounded-xl p-3">
-                        <div class="text-lg font-bold text-warning">0.3s</div>
-                        <div class="text-xs text-gray-500">耗时</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 功能特性 -->
-          <section id="features" class="py-20 px-4 bg-white">
-            <div class="max-w-7xl mx-auto">
-              <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">强大的功能特性</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">为您的业务提供全方位的实人认证解决方案</p>
-              </div>
-              <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div v-for="(feature, index) in features" :key="index" 
-                     class="bg-white rounded-2xl p-8 border border-gray-100 card-hover">
-                  <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
-                       :style="{ background: feature.bgColor }">
-                    <i :class="feature.icon + ' text-2xl'" :style="{ color: feature.iconColor }"></i>
-                  </div>
-                  <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ feature.title }}</h3>
-                  <p class="text-gray-600 leading-relaxed">{{ feature.desc }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 认证流程 -->
-          <section id="process" class="py-20 px-4 bg-gray-50">
-            <div class="max-w-7xl mx-auto">
-              <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">简单三步，完成认证</h2>
-                <p class="text-gray-600">全程仅需30秒，安全便捷</p>
-              </div>
-              <div class="grid md:grid-cols-3 gap-8 relative">
-                <div class="hidden md:block absolute top-1/2 left-1/4 right-1/4 h-0.5 bg-gradient-to-r from-primary via-secondary to-primary -translate-y-1/2"></div>
-                <div v-for="(step, index) in steps" :key="index" class="relative text-center">
-                  <div class="w-20 h-20 mx-auto mb-6 rounded-full gradient-bg flex items-center justify-center text-white text-3xl font-bold shadow-lg relative z-10">
-                    {{ index + 1 }}
-                  </div>
-                  <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ step.title }}</h3>
-                  <p class="text-gray-600">{{ step.desc }}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 多通道架构 -->
-          <section class="py-20 px-4 bg-white">
-            <div class="max-w-7xl mx-auto">
-              <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div>
-                  <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">多通道冗余架构</h2>
-                  <p class="text-gray-600 mb-8 leading-relaxed">
-                    集成多家主流人脸识别服务商，智能调度、自动降级，确保服务永不中断。
-                    单一通道故障时，自动切换到备用通道，保障业务连续性。
-                  </p>
-                  <div class="space-y-4">
-                    <div v-for="channel in channels" :key="channel.name" 
-                         class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                      <div class="w-12 h-12 rounded-xl flex items-center justify-center"
-                           :style="{ background: channel.color + '20' }">
-                        <i :class="channel.icon" :style="{ color: channel.color }"></i>
-                      </div>
-                      <div class="flex-1">
-                        <div class="font-medium text-gray-900">{{ channel.name }}</div>
-                        <div class="text-sm text-gray-500">{{ channel.desc }}</div>
-                      </div>
-                      <div class="text-success text-sm">
-                        <i class="fas fa-check-circle mr-1"></i>可用
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="relative">
-                  <div class="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl p-8">
-                    <div class="text-center mb-8">
-                      <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
-                        <i class="fas fa-network-wired text-primary"></i>
-                        <span class="font-medium">智能调度中心</span>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                      <div v-for="i in 4" :key="i" 
-                           class="bg-white rounded-xl p-4 text-center shadow-sm card-hover">
-                        <div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <i class="fas fa-server text-primary"></i>
-                        </div>
-                        <div class="text-sm font-medium">通道 {{ i }}</div>
-                        <div class="text-xs text-success">正常</div>
-                      </div>
-                    </div>
-                    <div class="mt-6 text-center">
-                      <div class="inline-flex items-center gap-2 text-sm text-gray-500">
-                        <i class="fas fa-shield-alt text-success"></i>
-                        自动降级 · 故障转移 · 负载均衡
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 价格方案 -->
-          <section id="pricing" class="py-20 px-4 bg-gray-50">
-            <div class="max-w-7xl mx-auto">
-              <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">灵活的价格方案</h2>
-                <p class="text-gray-600">按需选择，满足不同规模需求</p>
-              </div>
-              <div class="grid md:grid-cols-3 gap-8">
-                <div v-for="(plan, index) in plans" :key="index"
-                     class="bg-white rounded-2xl p-8 border border-gray-100 relative card-hover"
-                     :class="{ 'border-primary shadow-xl scale-105': plan.recommended }">
-                  <div v-if="plan.recommended" 
-                       class="absolute -top-4 left-1/2 -translate-x-1/2 gradient-bg text-white px-4 py-1 rounded-full text-sm font-medium">
-                    推荐
-                  </div>
-                  <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ plan.name }}</h3>
-                  <p class="text-gray-500 text-sm mb-6">{{ plan.desc }}</p>
-                  <div class="mb-6">
-                    <span class="text-4xl font-bold text-gray-900">¥{{ plan.price }}</span>
-                    <span class="text-gray-500">/{{ plan.unit }}</span>
-                  </div>
-                  <ul class="space-y-3 mb-8">
-                    <li v-for="feature in plan.features" :key="feature" class="flex items-center gap-3 text-gray-600">
-                      <i class="fas fa-check text-success"></i>
-                      {{ feature }}
-                    </li>
-                  </ul>
-                  <button class="w-full py-3 rounded-xl font-medium transition"
-                          :class="plan.recommended ? 'btn-gradient text-white' : 'border border-gray-300 text-gray-700 hover:border-primary hover:text-primary'">
-                    立即选购
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- FAQ -->
-          <section id="faq" class="py-20 px-4 bg-white">
-            <div class="max-w-3xl mx-auto">
-              <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">常见问题</h2>
-                <p class="text-gray-600">您可能想了解的问题</p>
-              </div>
-              <div class="space-y-4">
-                <div v-for="(faq, index) in faqs" :key="index"
-                     class="border border-gray-200 rounded-xl overflow-hidden">
-                  <button @click="toggleFaq(index)"
-                          class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition">
-                    <span class="font-medium text-gray-900">{{ faq.q }}</span>
-                    <i class="fas fa-chevron-down text-gray-400 transition-transform"
-                       :class="{ 'rotate-180': openFaq === index }"></i>
-                  </button>
-                  <div v-show="openFaq === index" class="px-6 pb-4 text-gray-600">
-                    {{ faq.a }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- CTA -->
-          <section class="py-20 px-4">
-            <div class="max-w-4xl mx-auto">
-              <div class="gradient-bg rounded-3xl p-12 text-center text-white relative overflow-hidden">
-                <div class="absolute inset-0 opacity-10">
-                  <div class="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl"></div>
-                  <div class="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full blur-3xl"></div>
-                </div>
-                <div class="relative">
-                  <h2 class="text-3xl md:text-4xl font-bold mb-4">准备好开始了吗？</h2>
-                  <p class="text-white/80 mb-8 max-w-xl mx-auto">
-                    立即接入森码云实人认证，为您的业务保驾护航
-                  </p>
-                  <div class="flex flex-wrap justify-center gap-4">
-                    <button @click="startVerify" class="bg-white text-primary px-8 py-3 rounded-full font-medium hover:bg-gray-100 transition">
-                      免费试用
-                    </button>
-                    <button class="border border-white/30 text-white px-8 py-3 rounded-full font-medium hover:bg-white/10 transition">
-                      联系我们
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 页脚 -->
-          <footer class="bg-gray-900 text-gray-400 py-12 px-4">
-            <div class="max-w-7xl mx-auto">
-              <div class="grid md:grid-cols-4 gap-8 mb-8">
-                <div>
-                  <div class="flex items-center gap-2 mb-4">
-                    <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
-                      <i class="fas fa-fingerprint text-white"></i>
-                    </div>
-                    <span class="text-xl font-bold text-white">森码云</span>
-                  </div>
-                  <p class="text-sm leading-relaxed">安全、可靠、易用的实人认证服务提供商</p>
-                </div>
-                <div>
-                  <h4 class="text-white font-medium mb-4">产品</h4>
-                  <ul class="space-y-2 text-sm">
-                    <li><a href="#" class="hover:text-white transition">人脸比对</a></li>
-                    <li><a href="#" class="hover:text-white transition">活体检测</a></li>
-                    <li><a href="#" class="hover:text-white transition">身份核验</a></li>
-                    <li><a href="#" class="hover:text-white transition">API接口</a></li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 class="text-white font-medium mb-4">资源</h4>
-                  <ul class="space-y-2 text-sm">
-                    <li><a href="/docs" class="hover:text-white transition">开发文档</a></li>
-                    <li><a href="#" class="hover:text-white transition">SDK下载</a></li>
-                    <li><a href="#" class="hover:text-white transition">常见问题</a></li>
-                    <li><a href="#" class="hover:text-white transition">更新日志</a></li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 class="text-white font-medium mb-4">联系我们</h4>
-                  <ul class="space-y-2 text-sm">
-                    <li><i class="fas fa-envelope mr-2"></i>support@builds.codes</li>
-                    <li><i class="fas fa-globe mr-2"></i>face.builds.codes</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="border-t border-gray-800 pt-8 text-center text-sm">
-                <p>© 2024 森码云. All rights reserved.</p>
-              </div>
-            </div>
-          </footer>
-        </div>
-      `,
+    const app = createApp({
       setup() {
-        const router = useRouter();
-        const openFaq = ref(null);
+        const mobileMenuOpen = ref(false);
+        const activeFaq = ref(0);
         
-        const features = [
-          { icon: 'fas fa-user-shield', title: '活体检测', desc: '支持眨眼、张嘴、摇头等多种动作，有效抵御照片、视频、面具等攻击', bgColor: '#dbeafe', iconColor: '#3b82f6' },
-          { icon: 'fas fa-exchange-alt', title: '人脸比对', desc: '基于深度学习算法，准确率高达99.8%，支持1:1和1:N比对', bgColor: '#dcfce7', iconColor: '#22c55e' },
-          { icon: 'fas fa-id-card', title: '身份核验', desc: '对接权威数据源，验证身份证信息真实性，确保人证合一', bgColor: '#fef3c7', iconColor: '#f59e0b' },
-          { icon: 'fas fa-bolt', title: '极速响应', desc: '平均响应时间500ms，支持高并发，轻松应对业务高峰', bgColor: '#ede9fe', iconColor: '#8b5cf6' },
-          { icon: 'fas fa-lock', title: '数据安全', desc: '全程加密传输，敏感数据加密存储，符合等保三级要求', bgColor: '#fee2e2', iconColor: '#ef4444' },
-          { icon: 'fas fa-plug', title: '易于集成', desc: '提供RESTful API和多语言SDK，最快10分钟完成接入', bgColor: '#cffafe', iconColor: '#06b6d4' }
-        ];
-        
-        const steps = [
-          { title: '发起认证', desc: '调用API或使用SDK发起认证请求' },
-          { title: '采集人脸', desc: '用户按照提示完成人脸采集和活体动作' },
-          { title: '获取结果', desc: '实时返回认证结果，支持回调通知' }
-        ];
-        
-        const channels = [
-          { name: '腾讯云慧眼', desc: '腾讯官方人脸识别服务', icon: 'fab fa-tencent-weibo', color: '#006eff' },
-          { name: '百度AI', desc: '百度智能云人脸识别', icon: 'fas fa-paw', color: '#2932e1' },
-          { name: 'Azure Face', desc: '微软Azure人脸识别', icon: 'fab fa-microsoft', color: '#00a4ef' },
-          { name: 'Face++', desc: '旷视科技人脸识别', icon: 'fas fa-face-smile', color: '#3370ff' },
-          { name: '自研算法', desc: '本地演示用算法', icon: 'fas fa-code', color: '#10b981' }
-        ];
-        
-        const plans = [
+        const faqs = ref([
           {
-            name: '入门版',
-            desc: '适合个人开发者和小型项目',
-            price: '0.5',
-            unit: '次',
-            features: ['人脸比对', '基础活体检测', '标准技术支持', '每日1000次免费'],
-            recommended: false
+            question: '实人认证的准确率是多少？',
+            answer: '我们的人脸比对准确率高达99.9%，活体检测通过率超过98%。采用多通道冗余架构，确保在各种网络环境下都能稳定运行。'
           },
           {
-            name: '专业版',
-            desc: '适合成长型企业',
-            price: '0.3',
-            unit: '次',
-            features: ['全部功能', '高级活体检测', '优先技术支持', '多通道冗余', '自定义配置'],
-            recommended: true
+            question: '支持哪些认证方式？',
+            answer: '支持人脸比对、活体检测、身份核验（身份证二要素/三要素）等多种认证方式。活体检测支持动作活体、炫彩活体、近红外活体等多种技术方案。'
           },
           {
-            name: '企业版',
-            desc: '适合大型企业定制',
-            price: '联系我们',
-            unit: '',
-            features: ['专属部署', '定制化开发', '7x24技术支持', 'SLA保障', '私有部署'],
-            recommended: false
+            question: '如何接入系统？需要多长时间？',
+            answer: '我们提供RESTful API和多语言SDK（PHP、Java、Python、Node.js等），完善的文档和示例代码，有经验的开发者可以在10分钟内完成接入。'
+          },
+          {
+            question: '数据安全如何保障？',
+            answer: '全链路采用HTTPS加密传输，敏感数据使用AES-256加密存储，人脸图片不可逆脱敏处理。系统符合等保2.0要求，通过ISO27001信息安全认证。'
+          },
+          {
+            question: '可以对接魔方财务系统吗？',
+            answer: '可以！我们提供完整的魔方财务插件，支持用户购买后自动发起认证，认证通过后自动开通服务。只需简单配置即可使用。'
           }
-        ];
-        
-        const faqs = [
-          { q: '实人认证的准确率有多高？', a: '我们的人脸比对算法准确率高达99.8%，在严格阈值下仍能保持99%以上的通过率。同时支持多通道融合验证，进一步提升准确率。' },
-          { q: '如何保障用户隐私安全？', a: '我们采用端到端加密传输，人脸图片使用AES-256加密存储，支持设置自动过期删除。所有数据处理均符合相关法律法规要求。' },
-          { q: '支持哪些活体检测方式？', a: '支持动作活体（眨眼、张嘴、摇头等）、炫彩活体、近红外活体等多种方式，可根据业务场景选择合适的方案。' },
-          { q: '接入需要多长时间？', a: '提供完善的API文档和多语言SDK，有开发经验的工程师最快10分钟即可完成接入。我们也提供技术支持协助集成。' },
-          { q: '如果某个通道故障怎么办？', a: '我们采用多通道冗余架构，当某个通道故障时会自动切换到备用通道，保障服务可用性达到99.99%。' }
-        ];
-        
-        function toggleFaq(index) {
-          openFaq.value = openFaq.value === index ? null : index;
-        }
-        
-        function startVerify() {
-          router.push('/verify');
-        }
-        
-        function goToAdmin() {
-          router.push('/admin');
-        }
-        
-        return {
-          openFaq,
-          features,
-          steps,
-          channels,
-          plans,
-          faqs,
-          toggleFaq,
-          startVerify,
-          goToAdmin
-        };
-      }
-    };
-
-    // 认证页
-    const VerifyView = {
-      template: `
-        <div class="min-h-screen gradient-bg flex items-center justify-center p-4">
-          <div class="w-full max-w-md">
-            <!-- Logo -->
-            <div class="text-center mb-8">
-              <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center">
-                <i class="fas fa-fingerprint text-white text-2xl"></i>
-              </div>
-              <h1 class="text-2xl font-bold text-white">实人认证</h1>
-              <p class="text-white/70 mt-2">请按照提示完成身份验证</p>
-            </div>
-
-            <!-- 主卡片 -->
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
-              <!-- 步骤指示器 -->
-              <div class="px-6 pt-6">
-                <div class="flex items-center justify-between mb-6">
-                  <div v-for="(s, i) in steps" :key="i" class="flex items-center">
-                    <div class="flex flex-col items-center">
-                      <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all"
-                           :class="currentStep > i ? 'bg-success text-white' : currentStep === i ? 'gradient-bg text-white' : 'bg-gray-100 text-gray-400'">
-                        <i v-if="currentStep > i" class="fas fa-check"></i>
-                        <span v-else>{{ i + 1 }}</span>
-                      </div>
-                      <span class="text-xs mt-2" :class="currentStep >= i ? 'text-gray-700' : 'text-gray-400'">{{ s }}</span>
-                    </div>
-                    <div v-if="i < steps.length - 1" class="w-16 h-1 mx-2 rounded-full"
-                         :class="currentStep > i ? 'bg-success' : 'bg-gray-200'"></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 步骤1：准备 -->
-              <div v-if="currentStep === 0" class="p-6 animate-fade-in">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">准备工作</h3>
-                <div class="space-y-3 mb-6">
-                  <div v-for="(item, i) in checkList" :key="i" 
-                       class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <i :class="item.icon" class="text-primary"></i>
-                    </div>
-                    <div class="flex-1">
-                      <div class="text-sm font-medium text-gray-900">{{ item.title }}</div>
-                      <div class="text-xs text-gray-500">{{ item.desc }}</div>
-                    </div>
-                    <i class="fas fa-check-circle text-success"></i>
-                  </div>
-                </div>
-                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
-                  <div class="flex gap-3">
-                    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
-                    <div class="text-sm text-blue-700">
-                      <p class="font-medium mb-1">隐私声明</p>
-                      <p>您的人脸数据仅用于本次认证，认证完成后将自动删除。我们承诺保护您的隐私安全。</p>
-                    </div>
-                  </div>
-                </div>
-                <button @click="startCamera" class="w-full btn-gradient text-white py-3 rounded-xl font-medium">
-                  <i class="fas fa-camera mr-2"></i>开始认证
-                </button>
-              </div>
-
-              <!-- 步骤2：采集 -->
-              <div v-if="currentStep === 1" class="p-6 animate-fade-in">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4 text-center">{{ currentActionText }}</h3>
-                
-                <!-- 摄像头区域 -->
-                <div class="relative aspect-square bg-gray-900 rounded-2xl overflow-hidden mb-6">
-                  <video ref="videoRef" class="w-full h-full object-cover" autoplay muted playsinline></video>
-                  
-                  <!-- 人脸框 -->
-                  <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-48 h-60 border-4 border-white/50 rounded-full relative">
-                      <div class="absolute inset-0 border-4 border-primary rounded-full animate-pulse-slow"></div>
-                      <!-- 四角 -->
-                      <div class="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-2xl"></div>
-                      <div class="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-2xl"></div>
-                      <div class="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-2xl"></div>
-                      <div class="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-2xl"></div>
-                    </div>
-                  </div>
-                  
-                  <!-- 进度环 -->
-                  <div class="absolute bottom-4 left-1/2 -translate-x-1/2">
-                    <div class="w-12 h-12 rounded-full border-4 border-white/30 border-t-primary animate-spin"></div>
-                  </div>
-                </div>
-
-                <!-- 动作提示 -->
-                <div class="text-center mb-6">
-                  <div class="inline-flex items-center gap-2 bg-warning/10 text-warning px-4 py-2 rounded-full">
-                    <i class="fas fa-lightbulb"></i>
-                    <span class="text-sm font-medium">{{ currentActionTip }}</span>
-                  </div>
-                </div>
-
-                <!-- 动作进度 -->
-                <div class="flex justify-center gap-4 mb-6">
-                  <div v-for="(action, i) in actions" :key="i"
-                       class="flex flex-col items-center">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl"
-                         :class="actionCompleted[i] ? 'bg-success text-white' : i === currentActionIndex ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400'">
-                      <i :class="action.icon"></i>
-                    </div>
-                    <span class="text-xs mt-2" :class="actionCompleted[i] ? 'text-success' : 'text-gray-500'">{{ action.name }}</span>
-                  </div>
-                </div>
-
-                <button @click="cancelVerify" class="w-full border border-gray-300 text-gray-600 py-3 rounded-xl font-medium hover:bg-gray-50 transition">
-                  取消认证
-                </button>
-              </div>
-
-              <!-- 步骤3：核验中 -->
-              <div v-if="currentStep === 2" class="p-6 text-center animate-fade-in">
-                <div class="py-8">
-                  <div class="w-20 h-20 mx-auto mb-6 relative">
-                    <div class="absolute inset-0 rounded-full border-4 border-gray-100"></div>
-                    <div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                      <i class="fas fa-fingerprint text-3xl text-primary"></i>
-                    </div>
-                  </div>
-                  <h3 class="text-xl font-semibold text-gray-900 mb-2">正在核验中</h3>
-                  <p class="text-gray-500">请稍候，正在比对您的身份信息...</p>
-                </div>
-                
-                <div class="space-y-3 mb-6">
-                  <div v-for="(step, i) in verifySteps" :key="i" 
-                       class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center"
-                         :class="step.status === 'done' ? 'bg-success text-white' : step.status === 'loading' ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-400'">
-                      <i v-if="step.status === 'done'" class="fas fa-check text-sm"></i>
-                      <i v-else-if="step.status === 'loading'" class="fas fa-spinner fa-spin text-sm"></i>
-                      <i v-else class="fas fa-clock text-sm"></i>
-                    </div>
-                    <span class="text-sm" :class="step.status === 'pending' ? 'text-gray-400' : 'text-gray-700'">{{ step.name }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 底部说明 -->
-            <div class="text-center mt-6 text-white/60 text-sm">
-              <p><i class="fas fa-shield-alt mr-1"></i> 全程加密 · 隐私保护 · 数据安全</p>
-            </div>
-          </div>
-        </div>
-      `,
-      setup() {
-        const router = useRouter();
-        const route = useRoute();
-        const videoRef = ref(null);
-        const currentStep = ref(0);
-        const currentActionIndex = ref(0);
-        
-        const steps = ['准备', '采集', '核验'];
-        
-        const checkList = [
-          { icon: 'fas fa-sun', title: '光线充足', desc: '确保面部光线均匀，无遮挡' },
-          { icon: 'fas fa-id-card', title: '准备证件', desc: '如有需要请准备好身份证' },
-          { icon: 'fas fa-wifi', title: '网络稳定', desc: '建议在WiFi或4G环境下进行' }
-        ];
-        
-        const actions = [
-          { name: '眨眼', icon: 'fas fa-eye' },
-          { name: '张嘴', icon: 'fas fa-meh' },
-          { name: '摇头', icon: 'fas fa-sync-alt' }
-        ];
-        
-        const actionCompleted = ref([false, false, false]);
-        
-        const currentActionText = computed(() => {
-          return '请' + actions[currentActionIndex.value].name;
-        });
-        
-        const currentActionTip = computed(() => {
-          const tips = [
-            '请缓慢眨眼2-3次',
-            '请张大嘴巴，保持2秒',
-            '请缓慢左右摇头'
-          ];
-          return tips[currentActionIndex.value];
-        });
-        
-        const verifySteps = ref([
-          { name: '上传人脸图片', status: 'loading' },
-          { name: '人脸质量检测', status: 'pending' },
-          { name: '活体检测验证', status: 'pending' },
-          { name: '获取认证结果', status: 'pending' }
         ]);
         
-        async function startCamera() {
-          try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-              video: { facingMode: 'user', width: 640, height: 480 } 
-            });
-            if (videoRef.value) {
-              videoRef.value.srcObject = stream;
-            }
-            currentStep.value = 1;
-            simulateLiveness();
-          } catch (err) {
-            alert('无法访问摄像头，请检查权限设置');
-          }
+        function goHome() {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
-        function simulateLiveness() {
-          // 模拟活体检测流程
-          let actionIndex = 0;
-          const interval = setInterval(() => {
-            if (actionIndex < actions.length) {
-              actionCompleted.value[actionIndex] = true;
-              actionIndex++;
-              currentActionIndex.value = Math.min(actionIndex, actions.length - 1);
-              
-              if (actionIndex >= actions.length) {
-                clearInterval(interval);
-                setTimeout(() => {
-                  startVerify();
-                }, 500);
-              }
-            }
-          }, 2000);
-        }
-        
-        function startVerify() {
-          currentStep.value = 2;
+        onMounted(() => {
+          // 初始化AOS动画
+          AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 100
+          });
           
-          // 模拟核验步骤
-          const stepInterval = setInterval(() => {
-            const currentIndex = verifySteps.value.findIndex(s => s.status === 'loading');
-            if (currentIndex >= 0) {
-              verifySteps.value[currentIndex].status = 'done';
-              if (currentIndex + 1 < verifySteps.value.length) {
-                verifySteps.value[currentIndex + 1].status = 'loading';
-              } else {
-                clearInterval(stepInterval);
-                setTimeout(() => {
-                  router.push('/result?status=passed&score=95.5');
-                }, 500);
-              }
+          // 隐藏加载动画
+          setTimeout(() => {
+            const loader = document.getElementById('pageLoader');
+            if (loader) {
+              loader.classList.add('hidden');
+              setTimeout(() => {
+                loader.style.display = 'none';
+              }, 500);
             }
           }, 800);
-        }
-        
-        function cancelVerify() {
-          if (confirm('确定要取消认证吗？')) {
-            router.push('/');
-          }
-        }
-        
-        return {
-          videoRef,
-          currentStep,
-          currentActionIndex,
-          steps,
-          checkList,
-          actions,
-          actionCompleted,
-          currentActionText,
-          currentActionTip,
-          verifySteps,
-          startCamera,
-          cancelVerify
-        };
-      }
-    };
-
-    // 结果页
-    const ResultView = {
-      template: `
-        <div class="min-h-screen gradient-bg flex items-center justify-center p-4">
-          <div class="w-full max-w-md">
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
-              <!-- 结果图标 -->
-              <div class="p-8 text-center" :class="status === 'passed' ? 'bg-success/5' : 'bg-danger/5'">
-                <div class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center relative"
-                     :class="status === 'passed' ? 'bg-success/10' : 'bg-danger/10'">
-                  <div v-if="status === 'passed'" class="pulse-ring inset-0" style="border-color: #10b981;"></div>
-                  <i :class="status === 'passed' ? 'fas fa-check-circle text-success' : 'fas fa-times-circle text-danger'" 
-                     class="text-5xl"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                  {{ status === 'passed' ? '认证成功' : '认证失败' }}
-                </h2>
-                <p class="text-gray-500">
-                  {{ status === 'passed' ? '恭喜您，实人认证已通过' : '很抱歉，认证未通过，请重试' }}
-                </p>
-              </div>
-
-              <!-- 详情 -->
-              <div class="p-6">
-                <div class="space-y-4 mb-6">
-                  <div class="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span class="text-gray-500">认证编号</span>
-                    <span class="font-mono text-sm text-gray-900">{{ verifyId }}</span>
-                  </div>
-                  <div class="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span class="text-gray-500">认证时间</span>
-                    <span class="text-gray-900">{{ verifyTime }}</span>
-                  </div>
-                  <div class="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span class="text-gray-500">认证通道</span>
-                    <span class="text-gray-900">腾讯云慧眼</span>
-                  </div>
-                  <div class="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span class="text-gray-500">相似度</span>
-                    <span class="font-semibold" :class="status === 'passed' ? 'text-success' : 'text-danger'">
-                      {{ score }}%
-                    </span>
-                  </div>
-                  <div class="flex justify-between items-center py-3">
-                    <span class="text-gray-500">活体检测</span>
-                    <span class="flex items-center gap-1" :class="status === 'passed' ? 'text-success' : 'text-danger'">
-                      <i :class="status === 'passed' ? 'fas fa-check' : 'fas fa-times'"></i>
-                      {{ status === 'passed' ? '通过' : '未通过' }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- 安全提示 -->
-                <div class="bg-blue-50 rounded-xl p-4 mb-6">
-                  <div class="flex gap-3">
-                    <i class="fas fa-shield-alt text-blue-500 mt-0.5"></i>
-                    <div class="text-sm text-blue-700">
-                      <p class="font-medium mb-1">安全提示</p>
-                      <p>您的人脸数据已加密存储，仅用于本次认证，将在保留期后自动删除。</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 操作按钮 -->
-                <div class="space-y-3">
-                  <button v-if="status === 'passed'" 
-                          class="w-full btn-gradient text-white py-3 rounded-xl font-medium">
-                    <i class="fas fa-check mr-2"></i>返回应用
-                  </button>
-                  <button v-else 
-                          @click="retry"
-                          class="w-full btn-gradient text-white py-3 rounded-xl font-medium">
-                    <i class="fas fa-redo mr-2"></i>重新认证
-                  </button>
-                  <button @click="goHome"
-                          class="w-full border border-gray-300 text-gray-600 py-3 rounded-xl font-medium hover:bg-gray-50 transition">
-                    返回首页
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `,
-      setup() {
-        const router = useRouter();
-        const route = useRoute();
-        
-        const status = ref(route.query.status || 'passed');
-        const score = ref(route.query.score || '95.5');
-        const verifyId = ref('SM' + Date.now().toString().slice(-10));
-        const verifyTime = ref(new Date().toLocaleString('zh-CN'));
-        
-        function retry() {
-          router.push('/verify');
-        }
-        
-        function goHome() {
-          router.push('/');
-        }
+          
+          // 平滑滚动
+          document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+              e.preventDefault();
+              const target = document.querySelector(this.getAttribute('href'));
+              if (target) {
+                target.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }
+            });
+          });
+        });
         
         return {
-          status,
-          score,
-          verifyId,
-          verifyTime,
-          retry,
+          mobileMenuOpen,
+          activeFaq,
+          faqs,
           goHome
         };
       }
-    };
-
-    // 登录页
-    const LoginView = {
-      template: `
-        <div class="min-h-screen flex">
-          <!-- 左侧表单 -->
-          <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
-            <div class="w-full max-w-md">
-              <div class="mb-8">
-                <div class="flex items-center gap-3 mb-2">
-                  <div class="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center">
-                    <i class="fas fa-fingerprint text-white text-xl"></i>
-                  </div>
-                  <span class="text-2xl font-bold gradient-text">森码云</span>
-                </div>
-                <h1 class="text-2xl font-bold text-gray-900 mt-6">欢迎回来</h1>
-                <p class="text-gray-500 mt-2">登录管理后台</p>
-              </div>
-
-              <form @submit.prevent="handleLogin" class="space-y-5">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
-                  <div class="relative">
-                    <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input v-model="form.username" type="text" 
-                           class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
-                           placeholder="请输入用户名">
-                  </div>
-                </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
-                  <div class="relative">
-                    <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input v-model="form.password" :type="showPassword ? 'text' : 'password'"
-                           class="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
-                           placeholder="请输入密码">
-                    <button type="button" @click="showPassword = !showPassword"
-                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                      <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" v-model="form.remember" class="rounded text-primary">
-                    <span class="text-sm text-gray-600">记住我</span>
-                  </label>
-                  <a href="#" class="text-sm text-primary hover:underline">忘记密码？</a>
-                </div>
-
-                <button type="submit" 
-                        class="w-full btn-gradient text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2"
-                        :disabled="loading">
-                  <i v-if="loading" class="fas fa-spinner fa-spin"></i>
-                  <span>{{ loading ? '登录中...' : '登录' }}</span>
-                </button>
-              </form>
-
-              <div class="mt-8 text-center text-sm text-gray-500">
-                <p>默认账号：admin / admin123</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- 右侧介绍 -->
-          <div class="hidden lg:flex lg:w-1/2 gradient-bg items-center justify-center p-12 relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10">
-              <div class="absolute top-20 left-20 w-64 h-64 bg-white rounded-full blur-3xl animate-float"></div>
-              <div class="absolute bottom-20 right-20 w-80 h-80 bg-white rounded-full blur-3xl animate-float" style="animation-delay: -3s;"></div>
-            </div>
-            
-            <div class="relative text-white max-w-md">
-              <h2 class="text-4xl font-bold mb-6">管理后台</h2>
-              <p class="text-white/80 text-lg mb-8 leading-relaxed">
-                强大的管理功能，让您轻松管理实人认证业务。
-                查看数据统计、管理API通道、配置系统设置。
-              </p>
-              
-              <div class="space-y-4">
-                <div v-for="feature in features" :key="feature.title" 
-                     class="flex items-center gap-4 bg-white/10 backdrop-blur rounded-xl p-4">
-                  <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                    <i :class="feature.icon" class="text-xl"></i>
-                  </div>
-                  <div>
-                    <div class="font-medium">{{ feature.title }}</div>
-                    <div class="text-sm text-white/70">{{ feature.desc }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `,
-      setup() {
-        const router = useRouter();
-        const form = reactive({
-          username: 'admin',
-          password: 'admin123',
-          remember: false
-        });
-        const showPassword = ref(false);
-        const loading = ref(false);
-        
-        const features = [
-          { icon: 'fas fa-chart-line', title: '数据统计', desc: '实时监控认证数据和趋势' },
-          { icon: 'fas fa-server', title: '通道管理', desc: '多通道配置和智能调度' },
-          { icon: 'fas fa-cog', title: '系统设置', desc: '灵活配置各项参数' }
-        ];
-        
-        function handleLogin() {
-          loading.value = true;
-          setTimeout(() => {
-            localStorage.setItem('admin_token', 'demo_token');
-            router.push('/admin');
-          }, 1000);
-        }
-        
-        return {
-          form,
-          showPassword,
-          loading,
-          features,
-          handleLogin
-        };
-      }
-    };
-
-    // 后台布局
-    const AdminLayout = {
-      template: `
-        <div class="min-h-screen bg-gray-50 flex">
-          <!-- 侧边栏 -->
-          <aside class="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-30 transition-all"
-                 :class="{ 'w-20': collapsed }">
-            <!-- Logo -->
-            <div class="h-16 flex items-center px-4 border-b border-gray-100">
-              <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center flex-shrink-0">
-                <i class="fas fa-fingerprint text-white"></i>
-              </div>
-              <div v-if="!collapsed" class="ml-3">
-                <div class="font-bold text-gray-900">森码云</div>
-                <div class="text-xs text-gray-500">管理后台</div>
-              </div>
-            </div>
-
-            <!-- 菜单 -->
-            <nav class="flex-1 py-4 overflow-y-auto">
-              <div class="px-3 mb-4">
-                <div v-if="!collapsed" class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">主菜单</div>
-                <div v-for="item in menuItems" :key="item.path"
-                     @click="goTo(item.path)"
-                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all mb-1"
-                     :class="isActive(item.path) ? 'gradient-bg text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'">
-                  <i :class="item.icon" class="text-lg w-5 text-center"></i>
-                  <span v-if="!collapsed" class="text-sm font-medium">{{ item.name }}</span>
-                </div>
-              </div>
-              
-              <div class="px-3 mb-4">
-                <div v-if="!collapsed" class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">系统管理</div>
-                <div v-for="item in systemItems" :key="item.path"
-                     @click="goTo(item.path)"
-                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all mb-1"
-                     :class="isActive(item.path) ? 'gradient-bg text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'">
-                  <i :class="item.icon" class="text-lg w-5 text-center"></i>
-                  <span v-if="!collapsed" class="text-sm font-medium">{{ item.name }}</span>
-                </div>
-              </div>
-            </nav>
-
-            <!-- 底部 -->
-            <div class="p-4 border-t border-gray-100">
-              <div @click="logout" 
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-gray-600 hover:bg-red-50 hover:text-red-500 transition-all">
-                <i class="fas fa-sign-out-alt text-lg w-5 text-center"></i>
-                <span v-if="!collapsed" class="text-sm font-medium">退出登录</span>
-              </div>
-            </div>
-          </aside>
-
-          <!-- 主内容区 -->
-          <div class="flex-1" :class="{ 'ml-64': !collapsed, 'ml-20': collapsed }">
-            <!-- 顶部栏 -->
-            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-20">
-              <div class="flex items-center gap-4">
-                <button @click="collapsed = !collapsed" 
-                        class="w-10 h-10 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 transition">
-                  <i :class="collapsed ? 'fas fa-indent' : 'fas fa-outdent'"></i>
-                </button>
-                <h1 class="text-lg font-semibold text-gray-900">{{ currentTitle }}</h1>
-              </div>
-              
-              <div class="flex items-center gap-4">
-                <button class="w-10 h-10 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 transition relative">
-                  <i class="fas fa-bell"></i>
-                  <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <div class="flex items-center gap-3 cursor-pointer">
-                  <div class="w-9 h-9 rounded-full gradient-bg flex items-center justify-center text-white text-sm font-medium">
-                    A
-                  </div>
-                  <div class="hidden md:block">
-                    <div class="text-sm font-medium text-gray-900">admin</div>
-                    <div class="text-xs text-gray-500">管理员</div>
-                  </div>
-                </div>
-              </div>
-            </header>
-
-            <!-- 内容区 -->
-            <main class="p-6">
-              <router-view></router-view>
-            </main>
-          </div>
-        </div>
-      `,
-      setup() {
-        const router = useRouter();
-        const route = useRoute();
-        const collapsed = ref(false);
-        
-        const menuItems = [
-          { path: '/admin/dashboard', name: '仪表盘', icon: 'fas fa-chart-pie' },
-          { path: '/admin/verifications', name: '认证记录', icon: 'fas fa-list-alt' },
-          { path: '/admin/channels', name: 'API通道', icon: 'fas fa-server' }
-        ];
-        
-        const systemItems = [
-          { path: '/admin/mofang', name: '魔方财务', icon: 'fas fa-coins' },
-          { path: '/admin/settings', name: '系统设置', icon: 'fas fa-cog' },
-          { path: '/admin/logs', name: '操作日志', icon: 'fas fa-history' }
-        ];
-        
-        const currentTitle = computed(() => {
-          const allItems = [...menuItems, ...systemItems];
-          const item = allItems.find(i => route.path.startsWith(i.path));
-          return item ? item.name : '仪表盘';
-        });
-        
-        function isActive(path) {
-          return route.path.startsWith(path);
-        }
-        
-        function goTo(path) {
-          router.push(path);
-        }
-        
-        function logout() {
-          if (confirm('确定要退出登录吗？')) {
-            localStorage.removeItem('admin_token');
-            router.push('/admin/login');
-          }
-        }
-        
-        return {
-          collapsed,
-          menuItems,
-          systemItems,
-          currentTitle,
-          isActive,
-          goTo,
-          logout
-        };
-      }
-    };
-
-    // 仪表盘
-    const DashboardView = {
-      template: `
-        <div class="space-y-6">
-          <!-- 统计卡片 -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div v-for="(stat, index) in stats" :key="index"
-                 class="bg-white rounded-2xl p-6 shadow-sm card-hover">
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
-                     :style="{ background: stat.color + '15' }">
-                  <i :class="stat.icon" class="text-xl" :style="{ color: stat.color }"></i>
-                </div>
-                <span class="text-sm" :class="stat.trend > 0 ? 'text-success' : 'text-danger'">
-                  <i :class="stat.trend > 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
-                  {{ Math.abs(stat.trend) }}%
-                </span>
-              </div>
-              <div class="text-2xl font-bold text-gray-900 mb-1">{{ stat.value }}</div>
-              <div class="text-sm text-gray-500">{{ stat.label }}</div>
-            </div>
-          </div>
-
-          <!-- 图表区域 -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- 趋势图 -->
-            <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
-              <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-semibold text-gray-900">认证趋势</h3>
-                <div class="flex gap-2">
-                  <button v-for="range in ranges" :key="range.value"
-                          @click="activeRange = range.value"
-                          class="px-3 py-1 text-sm rounded-lg transition"
-                          :class="activeRange === range.value ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'">
-                    {{ range.label }}
-                  </button>
-                </div>
-              </div>
-              <div ref="trendChartRef" style="height: 300px;"></div>
-            </div>
-
-            <!-- 通道占比 -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 class="text-lg font-semibold text-gray-900 mb-6">通道使用占比</h3>
-              <div ref="pieChartRef" style="height: 250px;"></div>
-              <div class="space-y-2 mt-4">
-                <div v-for="item in channelStats" :key="item.name" 
-                     class="flex items-center justify-between text-sm">
-                  <div class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full" :style="{ background: item.color }"></span>
-                    <span class="text-gray-600">{{ item.name }}</span>
-                  </div>
-                  <span class="font-medium text-gray-900">{{ item.value }}%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 最近记录 + 系统状态 -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- 最近认证记录 -->
-            <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
-              <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-semibold text-gray-900">最近认证</h3>
-                <button class="text-sm text-primary hover:underline">查看全部</button>
-              </div>
-              <div class="overflow-x-auto">
-                <table class="w-full">
-                  <thead>
-                    <tr class="text-left text-sm text-gray-500 border-b border-gray-100">
-                      <th class="pb-3 font-medium">编号</th>
-                      <th class="pb-3 font-medium">用户</th>
-                      <th class="pb-3 font-medium">状态</th>
-                      <th class="pb-3 font-medium">通道</th>
-                      <th class="pb-3 font-medium">时间</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="record in recentRecords" :key="record.id" 
-                        class="border-b border-gray-50 last:border-0">
-                      <td class="py-3 font-mono text-sm text-gray-600">{{ record.id }}</td>
-                      <td class="py-3 text-gray-900">{{ record.user }}</td>
-                      <td class="py-3">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium"
-                              :class="record.status === '通过' ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'">
-                          {{ record.status }}
-                        </span>
-                      </td>
-                      <td class="py-3 text-gray-600 text-sm">{{ record.channel }}</td>
-                      <td class="py-3 text-gray-500 text-sm">{{ record.time }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- 系统状态 -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 class="text-lg font-semibold text-gray-900 mb-6">系统状态</h3>
-              <div class="space-y-4">
-                <div v-for="item in systemStatus" :key="item.name"
-                     class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center"
-                         :style="{ background: item.color + '15' }">
-                      <i :class="item.icon" :style="{ color: item.color }"></i>
-                    </div>
-                    <div>
-                      <div class="text-sm font-medium text-gray-900">{{ item.name }}</div>
-                      <div class="text-xs text-gray-500">{{ item.desc }}</div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1 text-success text-sm">
-                    <span class="w-2 h-2 bg-success rounded-full animate-pulse"></span>
-                    正常
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `,
-      setup() {
-        const trendChartRef = ref(null);
-        const pieChartRef = ref(null);
-        const activeRange = ref('7d');
-        
-        const ranges = [
-          { label: '7天', value: '7d' },
-          { label: '30天', value: '30d' }
-        ];
-        
-        const stats = [
-          { label: '今日认证', value: '1,234', icon: 'fas fa-user-check', color: '#667eea', trend: 12.5 },
-          { label: '通过数', value: '1,156', icon: 'fas fa-check-circle', color: '#10b981', trend: 8.3 },
-          { label: '失败数', value: '78', icon: 'fas fa-times-circle', color: '#ef4444', trend: -5.2 },
-          { label: '平均耗时', value: '0.48s', icon: 'fas fa-clock', color: '#f59e0b', trend: -3.1 }
-        ];
-        
-        const channelStats = [
-          { name: '腾讯云慧眼', value: 45, color: '#006eff' },
-          { name: '百度AI', value: 25, color: '#2932e1' },
-          { name: 'Azure', value: 15, color: '#00a4ef' },
-          { name: 'Face++', value: 10, color: '#3370ff' },
-          { name: '自研演示', value: 5, color: '#10b981' }
-        ];
-        
-        const recentRecords = [
-          { id: 'SM240315001', user: 'user_001', status: '通过', channel: '腾讯云', time: '14:30:28' },
-          { id: 'SM240315002', user: 'user_002', status: '通过', channel: '百度AI', time: '14:28:15' },
-          { id: 'SM240315003', user: 'user_003', status: '失败', channel: '腾讯云', time: '14:25:03' },
-          { id: 'SM240315004', user: 'user_004', status: '通过', channel: 'Azure', time: '14:22:45' },
-          { id: 'SM240315005', user: 'user_005', status: '通过', channel: 'Face++', time: '14:20:12' }
-        ];
-        
-        const systemStatus = [
-          { name: '服务状态', desc: '运行正常', icon: 'fas fa-server', color: '#10b981' },
-          { name: '可用通道', desc: '5 / 5', icon: 'fas fa-network-wired', color: '#667eea' },
-          { name: '响应时间', desc: '480ms', icon: 'fas fa-bolt', color: '#f59e0b' },
-          { name: '成功率', desc: '93.6%', icon: 'fas fa-chart-line', color: '#8b5cf6' }
-        ];
-        
-        onMounted(() => {
-          // 趋势图
-          const trendChart = echarts.init(trendChartRef.value);
-          trendChart.setOption({
-            tooltip: { trigger: 'axis' },
-            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-            xAxis: {
-              type: 'category',
-              data: ['3/9', '3/10', '3/11', '3/12', '3/13', '3/14', '3/15'],
-              axisLine: { lineStyle: { color: '#e5e7eb' } },
-              axisLabel: { color: '#6b7280' }
-            },
-            yAxis: {
-              type: 'value',
-              splitLine: { lineStyle: { color: '#f3f4f6' } },
-              axisLabel: { color: '#6b7280' }
-            },
-            series: [{
-              name: '认证次数',
-              type: 'line',
-              smooth: true,
-              data: [820, 932, 901, 1034, 1290, 1330, 1234],
-              itemStyle: { color: '#667eea' },
-              areaStyle: {
-                color: {
-                  type: 'linear',
-                  x: 0, y: 0, x2: 0, y2: 1,
-                  colorStops: [
-                    { offset: 0, color: 'rgba(102, 126, 234, 0.3)' },
-                    { offset: 1, color: 'rgba(102, 126, 234, 0)' }
-                  ]
-                }
-              }
-            }]
-          });
-          
-          // 饼图
-          const pieChart = echarts.init(pieChartRef.value);
-          pieChart.setOption({
-            tooltip: { trigger: 'item' },
-            series: [{
-              type: 'pie',
-              radius: ['50%', '70%'],
-              avoidLabelOverlap: false,
-              itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
-              label: { show: false },
-              data: channelStats.map(c => ({ name: c.name, value: c.value, itemStyle: { color: c.color } }))
-            }]
-          });
-          
-          window.addEventListener('resize', () => {
-            trendChart.resize();
-            pieChart.resize();
-          });
-        });
-        
-        return {
-          trendChartRef,
-          pieChartRef,
-          activeRange,
-          ranges,
-          stats,
-          channelStats,
-          recentRecords,
-          systemStatus
-        };
-      }
-    };
-
-    // ============================================
-    // 路由配置
-    // ============================================
-    const routes = [
-      { path: '/', component: HomeView },
-      { path: '/verify', component: VerifyView },
-      { path: '/result', component: ResultView },
-      { path: '/admin/login', component: LoginView },
-      {
-        path: '/admin',
-        component: AdminLayout,
-        redirect: '/admin/dashboard',
-        children: [
-          { path: 'dashboard', component: DashboardView },
-          { path: 'verifications', component: { template: '<div class="bg-white rounded-2xl p-8 text-center"><i class="fas fa-list-alt text-5xl text-gray-300 mb-4"></i><h3 class="text-xl font-semibold text-gray-700 mb-2">认证记录</h3><p class="text-gray-500">功能开发中...</p></div>' } },
-          { path: 'channels', component: { template: '<div class="bg-white rounded-2xl p-8 text-center"><i class="fas fa-server text-5xl text-gray-300 mb-4"></i><h3 class="text-xl font-semibold text-gray-700 mb-2">API通道管理</h3><p class="text-gray-500">功能开发中...</p></div>' } },
-          { path: 'mofang', component: { template: '<div class="bg-white rounded-2xl p-8 text-center"><i class="fas fa-coins text-5xl text-gray-300 mb-4"></i><h3 class="text-xl font-semibold text-gray-700 mb-2">魔方财务配置</h3><p class="text-gray-500">功能开发中...</p></div>' } },
-          { path: 'settings', component: { template: '<div class="bg-white rounded-2xl p-8 text-center"><i class="fas fa-cog text-5xl text-gray-300 mb-4"></i><h3 class="text-xl font-semibold text-gray-700 mb-2">系统设置</h3><p class="text-gray-500">功能开发中...</p></div>' } },
-          { path: 'logs', component: { template: '<div class="bg-white rounded-2xl p-8 text-center"><i class="fas fa-history text-5xl text-gray-300 mb-4"></i><h3 class="text-xl font-semibold text-gray-700 mb-2">操作日志</h3><p class="text-gray-500">功能开发中...</p></div>' } }
-        ]
-      },
-      { path: '/:pathMatch(.*)*', component: { template: '<div class="min-h-screen flex items-center justify-center bg-gray-50"><div class="text-center"><div class="text-9xl font-bold gradient-text mb-4">404</div><h2 class="text-2xl font-semibold text-gray-700 mb-2">页面未找到</h2><p class="text-gray-500 mb-8">您访问的页面不存在</p><button onclick="location.href=\'/\'" class="btn-gradient text-white px-8 py-3 rounded-full font-medium">返回首页</button></div></div>' } }
-    ];
-
-    const router = createRouter({
-      history: createWebHistory(),
-      routes
     });
 
-    // ============================================
-    // 创建应用
-    // ============================================
-    const app = createApp({
-      setup() {
-        const loading = ref(true);
-        
-        onMounted(() => {
-          setTimeout(() => {
-            loading.value = false;
-          }, 500);
-        });
-        
-        return { loading };
-      }
-    });
-
-    app.use(router);
-    app.use(createPinia());
     app.use(ElementPlus, { locale: ElementPlusLocaleZhCn });
-
     app.mount('#app');
   </script>
 </body>

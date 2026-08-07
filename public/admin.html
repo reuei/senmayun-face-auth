@@ -117,6 +117,35 @@
   </style>
 </head>
 <body>
+  <!-- 页面加载动画 -->
+  <div id="pageLoader" class="fixed inset-0 z-[9999] flex items-center justify-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="text-center text-white">
+      <div class="relative w-20 h-20 mx-auto mb-6">
+        <div class="absolute inset-0 border-3 border-transparent border-t-white rounded-full" style="animation: spin 1s linear infinite;"></div>
+        <div class="absolute inset-2 border-3 border-transparent border-t-white/60 rounded-full" style="animation: spin 1.5s linear infinite reverse;"></div>
+        <div class="absolute inset-4 border-3 border-transparent border-t-white/30 rounded-full" style="animation: spin 2s linear infinite;"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <i class="fas fa-fingerprint text-2xl"></i>
+        </div>
+      </div>
+      <div class="text-lg font-medium mb-2">森码云实人认证</div>
+      <div class="text-sm opacity-70 mb-4">管理后台加载中...</div>
+      <div class="w-48 h-1 mx-auto bg-white/20 rounded-full overflow-hidden">
+        <div class="h-full bg-white rounded-full" style="width: 0%; animation: loaderProgress 2s ease-in-out infinite;"></div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes loaderProgress {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+    .border-3 { border-width: 3px; }
+  </style>
+
   <div id="app">
     <div v-if="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
       <div class="text-center">
@@ -1733,7 +1762,18 @@
         onMounted(() => {
           setTimeout(() => {
             loading.value = false;
-          }, 300);
+            
+            // 隐藏页面加载动画
+            const pageLoader = document.getElementById('pageLoader');
+            if (pageLoader) {
+              pageLoader.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
+              pageLoader.style.opacity = '0';
+              pageLoader.style.visibility = 'hidden';
+              setTimeout(() => {
+                pageLoader.style.display = 'none';
+              }, 500);
+            }
+          }, 500);
         });
         
         return { loading };
